@@ -133,6 +133,7 @@ import Typing from "./images/typing.png";
 import paperClip from "./icons/Paperclip.svg?url";
 import EmojisIcon from "./icons/Emojis.svg?url";
 import SendIcon from "./icons/send.svg?url";
+import Mesaging from "./icons/messaging.svg?url"
 
 export {
   GoggleIcon,
@@ -270,4 +271,5 @@ export {
   paperClip,
   SendIcon,
   EmojisIcon,
+  Mesaging
 };

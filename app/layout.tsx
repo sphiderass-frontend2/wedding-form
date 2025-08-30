@@ -10,7 +10,7 @@ import "./globals.css";
 
 const sidebarItems = [
   { icon: Home, text: "Home", href: "/dashboard" },
-  { icon: Home, text: "Event", href: "/dashboard/event" },
+  { icon: Home, text: "Event", href: "/" },
   { icon: OrganizationIcon, text: "Organization", href: "/dashboard/organization" },
   { icon: Wallet, text: "Wallet", href: "/dashboard/wallet" },
   { icon: Support, text: "Support", href: "/dashboard/support" },
