@@ -8,27 +8,29 @@ export const useWedding = () => {
   const token = useAuthStore((state) => state.token);
 
   const uploadFile = useCallback(
-    async (file: File): Promise<string> => {
+    async (invitationCard: File): Promise<string> => {
       const formData = new FormData();
-      formData.append("file", file);
-
+      formData.append("invitationCard", invitationCard);
+  
       const response = await fetch(`${api}events/upload`, {
         method: "POST",
         headers: token
-          ? { Authorization: `Bearer ${token}` }
-          : undefined, // add auth header if available
+          ? { Authorization: `Bearer ${token}` } // no Content-Type here
+          : undefined,
         body: formData,
       });
-
+  
       if (!response.ok) {
-        throw new Error("Failed to upload file");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to upload file");
       }
-
+  
       const data = await response.json();
-      return data.url ?? data; // in case backend wraps URL in { url: "..." }
+      return data.url ?? data; // return uploaded file URL
     },
     [token]
   );
+  
 
   const createEvent = useCallback(
     async (eventData: any): Promise<any> => {

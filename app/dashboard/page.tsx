@@ -123,21 +123,26 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
     const createEvent = async () => {
       try {
-        // Clone details so we don’t mutate directly
+        // Clone details so we don't mutate state directly
         let updatedDetails = { ...details };
     
-        // If there’s an invitation card file
+        // If invitationCard is a File, upload it first
         if (updatedDetails.invitationCard instanceof File) {
           const file = updatedDetails.invitationCard;
     
-          // Upload file first
-          const uploadResponse = await uploadFile(file);
+          // Upload file using your uploadFile function
+          const uploadedUrl = await uploadFile(file);
     
-          // Assuming the response has { url: "uploaded_file_url" }
-          updatedDetails.invitationCard = uploadResponse;
+          // Replace the File object with the URL returned from backend
+          updatedDetails.invitationCard = uploadedUrl;
         }
     
-        // Now send all details to backend
+        // Ensure numberOfAttendees is a number
+        if (typeof updatedDetails.numberOfAttendees === "string") {
+          updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
+        }
+    
+        // Now send event data (without File objects) to backend
         const response = await createEventApi(updatedDetails);
     
         console.log("Event created successfully:", response);
@@ -146,6 +151,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         console.error("Error creating event:", error);
       }
     };
+    
     
     
 

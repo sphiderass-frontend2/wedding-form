@@ -63,8 +63,8 @@ export default function Preview({ formData }: Props) {
       {/* Step 2: Guest Info */}
       <div>
         <h2 className="text-xl font-semibold text-accent mb-2">Guest List</h2>
-        {formData.uestList?.length > 0 ? (
-          formData.uestList.map((guest: any, index: number) => (
+        {formData.guestList?.length > 0 ? (
+          formData.guestList.map((guest: any, index: number) => (
             <div key={index} className="mb-3 p-3 border rounded-lg">
               <p><strong>Full Name:</strong> {guest.fullName}</p>
               <p><strong>Title/Relation:</strong> {guest.title}</p>

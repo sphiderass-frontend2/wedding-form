@@ -68,7 +68,7 @@ export const useAuth = () => {
   }, [clearToken]);
 
   const sentOtp = useCallback(async (email: string): Promise<any> => {
-    const response = await fetch(`${api}auth/send-otp`, {
+    const response = await fetch(`${api}/auth/verify-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

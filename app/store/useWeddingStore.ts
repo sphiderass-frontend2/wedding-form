@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface Guest {
   fullName: string;
@@ -31,9 +32,9 @@ interface WeddingStore {
   removeGuest: (index: number) => void;
   updateGuest: (index: number, guest: Partial<Guest>) => void;
   resetForm: () => void;
+  clearForm: () => void;
 }
 
-// ✅ Correct initial state
 const initialFormData: FormData = {
   name: "",
   description: "",
@@ -49,39 +50,54 @@ const initialFormData: FormData = {
   invitationCard: null,
 };
 
-export const useWeddingStore = create<WeddingStore>((set) => ({
-  formData: initialFormData,
+export const useWeddingStore = create<WeddingStore>()(
+  persist(
+    (set) => ({
+      formData: initialFormData,
 
-  updateField: (field, value) =>
-    set((state) => ({
-      formData: { ...state.formData, [field]: value },
-    })),
+      updateField: (field, value) =>
+        set((state) => ({
+          formData: { ...state.formData, [field]: value },
+        })),
 
-  addGuest: (guest) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        guestList: [...state.formData.guestList, guest],
+      addGuest: (guest) =>
+        set((state) => ({
+          formData: {
+            ...state.formData,
+            guestList: [...state.formData.guestList, guest],
+          },
+        })),
+
+      removeGuest: (index) =>
+        set((state) => ({
+          formData: {
+            ...state.formData,
+            guestList: state.formData.guestList.filter((_, i) => i !== index),
+          },
+        })),
+
+      updateGuest: (index, guest) =>
+        set((state) => ({
+          formData: {
+            ...state.formData,
+            guestList: state.formData.guestList.map((g, i) =>
+              i === index ? { ...g, ...guest } : g
+            ),
+          },
+        })),
+
+      resetForm: () => set({ formData: initialFormData }),
+
+      clearForm: () => {
+        set({ formData: initialFormData });
+        localStorage.removeItem("wedding-storage");
       },
-    })),
-
-  removeGuest: (index) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        guestList: state.formData.guestList.filter((_, i) => i !== index),
-      },
-    })),
-
-  updateGuest: (index, guest) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        guestList: state.formData.guestList.map((g, i) =>
-          i === index ? { ...g, ...guest } : g
-        ),
-      },
-    })),
-
-  resetForm: () => set({ formData: initialFormData }),
-}));
+    }),
+    {
+      name: "wedding-storage", 
+      partialize: (state) => ({
+        formData: { ...state.formData, invitationCard: null },
+      }),
+    }
+  )
+);
