@@ -3,7 +3,7 @@
 import InputField from "../InputField";
 import CategoryDropdown from "../CategoryDropdown";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Mesaging } from "@/public/assets";
 
@@ -17,14 +17,14 @@ const rsvpOptions = ["RSVP Open", "RSVP closed"];
 
 export default function Step2({ formData, onChange, setFormData }: Props) {
   const [showPreview, setShowPreview] = useState(false);
-  const [activeGuestIndex, setActiveGuestIndex] = useState<number | null>(0); // track the guest being edited
+  const [activeGuestIndex, setActiveGuestIndex] = useState<number | null>(0);
 
-  // Add new guest and show its form
+  
+
   const handleAddGuest = () => {
-    setFormData((prev: any) => ({
-      ...prev,
-      GuestList: [
-        ...(prev.GuestList || []),
+    setFormData((prev: any) => {
+      const updatedList = [
+        ...(prev.guestList || []),
         {
           fullName: "",
           title: "",
@@ -32,11 +32,15 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
           email: "",
           rsvp: "",
         },
-      ],
-    }));
-    setActiveGuestIndex((formData.GuestList?.length || 0)); // focus on new guest
-    setShowPreview(false); // back to form
+      ];
+      return { ...prev, guestList: updatedList };
+    });
+  
+    // force form mode
+    setActiveGuestIndex(formData.guestList?.length || 0);
+    setShowPreview(false);
   };
+  
 
   // Save & show preview
   const handleSave = () => {
@@ -51,10 +55,13 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
   };
 
   const activeGuest =
-    activeGuestIndex !== null ? formData.GuestList?.[activeGuestIndex] : null;
+  activeGuestIndex !== null && formData.guestList && formData.guestList.length > 0
+    ? formData.guestList[activeGuestIndex]
+    : null;
+
 
   return (
-    <div>
+    <div className="bg-tab-primary p-5">
       <h1 className="text-accent text-2xl font-semibold">Guest Info</h1>
       <p className="mt-3 text-gray">Manage your guest</p>
 
@@ -63,12 +70,12 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
         <div className="flex justify-between items-center">
           <p className="text-accent text-2xl font-semibold">Guest List</p>
           <button
-            type="button"
-            onClick={handleAddGuest}
-            className="text-accent font-semibold"
-          >
-            + Add Guest
-          </button>
+  type="button"
+  onClick={handleAddGuest}
+  className="text-accent font-semibold cursor-pointer relative z-[9999] bg-red-200"
+>
+  + Add Guest
+</button>
         </div>
       </div>
 
@@ -104,8 +111,8 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
           <InputField
             label="Email"
             placeholder="Enter Email"
-            value={activeGuest.email}
-            onChange={(v) => onChange("email", v, activeGuestIndex!)}
+            value={activeGuest.emailAddress}
+            onChange={(v) => onChange("emailAddress", v, activeGuestIndex!)}
           />
 
           <h2 className="text-accent text-xl font-semibold mt-4">
@@ -131,7 +138,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
       {/* ---- Show Preview ---- */}
       {showPreview && (
         <div className="p-4 space-y-5">
-          {formData.GuestList?.map((guest: any, index: number) => (
+          {formData.guestList?.map((guest: any, index: number) => (
             <div key={index} className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary">
               <div className="flex items-center gap-4">
                 <p className="bg-accent p-5 rounded-2xl">

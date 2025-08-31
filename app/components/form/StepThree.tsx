@@ -12,25 +12,25 @@ interface Props {
 export default function Step3({ formData, onChange }: Props) {
   const [state, setState] = useState<{
     isDragging: boolean;
-    banner: File | null;
-    bannerPreview: string | null;
+    invitationCard: File | null;
+    invitationCardPreview: string | null;
   }>({
     isDragging: false,
-    banner: null,
-    bannerPreview: null,
+    invitationCard: null,
+    invitationCardPreview: null,
   });
 
   // Handle file selection
-  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleinvitationCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setState((prev) => ({
         ...prev,
-        banner: file,
-        bannerPreview: previewUrl,
+        invitationCard: file,
+        invitationCardPreview: previewUrl,
       }));
-      onChange("banner", file);
+      onChange("invitationCard", file);
     }
   };
 
@@ -42,15 +42,15 @@ export default function Step3({ formData, onChange }: Props) {
       const previewUrl = URL.createObjectURL(file);
       setState({
         isDragging: false,
-        banner: file,
-        bannerPreview: previewUrl,
+        invitationCard: file,
+        invitationCardPreview: previewUrl,
       });
-      onChange("banner", file);
+      onChange("invitationCard", file);
     }
   };
 
   return (
-    <section>
+    <section className="bg-tab-primary px-5 py-7 rounded-2xl">
       <h1 className="text-accent text-2xl font-semibold">Event Invitation Card</h1>
 
       <div className="mt-5 mb-5">
@@ -70,10 +70,10 @@ export default function Step3({ formData, onChange }: Props) {
             state.isDragging ? "bg-blue-50 border-blue-500" : ""
           }`}
         >
-          {state.banner && state.bannerPreview ? (
+          {state.invitationCard && state.invitationCardPreview ? (
             <div className="relative w-full">
               <Image
-                src={state.bannerPreview}
+                src={state.invitationCardPreview}
                 alt="Preview"
                 width={0}
                 height={0}
@@ -85,15 +85,15 @@ export default function Step3({ formData, onChange }: Props) {
                 onClick={() =>
                   setState((prev) => ({
                     ...prev,
-                    banner: null,
-                    bannerPreview: null,
+                    invitationCard: null,
+                    invitationCardPreview: null,
                   }))
                 }
                 className="absolute top-2 right-2 bg-white text-black rounded-full p-1 shadow"
               >
                 ✕
               </button>
-              <p className="text-sm text-gray-600 mt-2">{state.banner.name}</p>
+              <p className="text-sm text-gray-600 mt-2">{state.invitationCard.name}</p>
             </div>
           ) : (
             <div className="flex justify-center items-center flex-col gap-3 py-14">
@@ -106,7 +106,7 @@ export default function Step3({ formData, onChange }: Props) {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={handleBannerChange}
+                  onChange={handleinvitationCardChange}
                 />
               </label>
             </div>

@@ -1,0 +1,125 @@
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 100;
+  src: local('Lufga Thin'), url('/assets/fonts/LufgaThin.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 100;
+  src: local('Lufga Thin Italic'), url('/assets/fonts/LufgaThinItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 200;
+  src: local('Lufga ExtraLight'), url('/assets/fonts/LufgaExtraLight.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 200;
+  src: local('Lufga ExtraLight Italic'), url('/assets/fonts/LufgaExtraLightItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lufga Light'), url('/assets/fonts/LufgaLight.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 300;
+  src: local('Lufga Light Italic'), url('/assets/fonts/LufgaLightItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lufga Regular'), url('/assets/fonts/LufgaRegular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lufga Italic'), url('/assets/fonts/LufgaItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Lufga Medium'), url('/assets/fonts/LufgaMedium.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 500;
+  src: local('Lufga Medium Italic'), url('/assets/fonts/LufgaMediumItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Lufga SemiBold'), url('/assets/fonts/LufgaSemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 600;
+  src: local('Lufga SemiBold Italic'), url('/assets/fonts/LufgaSemiBoldItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lufga Bold'), url('/assets/fonts/LufgaBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Lufga Bold Italic'), url('/assets/fonts/LufgaBoldItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 800;
+  src: local('Lufga ExtraBold'), url('/assets/fonts/LufgaExtraBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 800;
+  src: local('Lufga ExtraBold Italic'), url('/assets/fonts/LufgaExtraBoldItalic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Lufga Black'), url('/assets/fonts/LufgaBlack.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Lufga';
+  font-style: italic;
+  font-weight: 900;
+  src: local('Lufga Black Italic'), url('/assets/fonts/LufgaBlackItalic.woff') format('woff');
+}

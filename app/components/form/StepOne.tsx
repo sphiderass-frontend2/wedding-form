@@ -22,7 +22,7 @@ export default function Step1({ formData, onChange }: Props) {
 
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 bg-tab-primary p-5">
       <h1 className="text-accent text-2xl font-semibold">Events Info</h1>
       <p className="mt-2 text-accent text-xl">Get Started With Your Event</p>
 
@@ -55,27 +55,33 @@ export default function Step1({ formData, onChange }: Props) {
       <InputField
           label="Number of Attendees"
           placeholder="Enter Number of Attendees"
-          value={formData.attendee}
-          onChange={(v) => onChange("attendee", v)}
+          value={formData.numberOfAttendees}
+          onChange={(v) => onChange("numberOfAttendees", v)}
         />
 
         <div className="space-y-5">
         <h1 className="text-accent text-2xl font-semibold">Date and Time</h1>
 
 
-        <div className="w-[20%] text-text-primary">
+        <div className=" w-full md:w-[40%] xl:w-[20%] text-text-primary">
             <label>Date</label>
-            <input type="date" className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
+            <input   type="date"
+              value={formData.date}
+              onChange={(e) => onChange("date", e.target.value)} className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
         </div>
 
-        <div className="grid grid-cols-2 gap-8 w-[60%] text-text-primary ">
+        <div className="grid md:grid-cols-2 gap-8 md:w-[60%] text-text-primary ">
         <div className="">
             <label>Start Time</label>
-            <input type="time" className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
+            <input   type="time"
+                value={formData.startTime}
+                onChange={(e) => onChange("startTime", e.target.value)} className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
         </div>
         <div className="">
         <label>End Time</label>
-            <input type="time" className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
+            <input  type="time"
+                value={formData.endTime}
+                onChange={(e) => onChange("endTime", e.target.value)} className="w-full border border-text-primary/50 py-3 px-4 rounded-2xl text-text-primary placeholder:text-gray outline-none mt-3" />
         </div>
 
         </div>
