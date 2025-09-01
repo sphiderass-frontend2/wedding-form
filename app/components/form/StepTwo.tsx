@@ -19,8 +19,6 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [activeGuestIndex, setActiveGuestIndex] = useState<number | null>(0);
 
-  
-
   const handleAddGuest = () => {
     setFormData((prev: any) => {
       const updatedList = [
@@ -35,12 +33,11 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
       ];
       return { ...prev, guestList: updatedList };
     });
-  
+
     // force form mode
     setActiveGuestIndex(formData.guestList?.length || 0);
     setShowPreview(false);
   };
-  
 
   // Save & show preview
   const handleSave = () => {
@@ -55,10 +52,11 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
   };
 
   const activeGuest =
-  activeGuestIndex !== null && formData.guestList && formData.guestList.length > 0
-    ? formData.guestList[activeGuestIndex]
-    : null;
-
+    activeGuestIndex !== null &&
+    formData.guestList &&
+    formData.guestList.length > 0
+      ? formData.guestList[activeGuestIndex]
+      : null;
 
   return (
     <div className="bg-tab-primary p-5">
@@ -70,12 +68,12 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
         <div className="flex justify-between items-center">
           <p className="text-accent text-2xl font-semibold">Guest List</p>
           <button
-  type="button"
-  onClick={handleAddGuest}
-  className="text-accent font-semibold cursor-pointer relative z-[9999] bg-red-200"
->
-  + Add Guest
-</button>
+            type="button"
+            onClick={handleAddGuest}
+            className="text-black font-semibold cursor-pointer relative z-[99999]"
+          >
+            + Add Guest
+          </button>
         </div>
       </div>
 
@@ -139,17 +137,20 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
       {showPreview && (
         <div className="p-4 space-y-5">
           {formData.guestList?.map((guest: any, index: number) => (
-            <div key={index} className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary">
+            <div
+              key={index}
+              className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary"
+            >
               <div className="flex items-center gap-4">
                 <p className="bg-accent p-5 rounded-2xl">
-                <Image src={Mesaging} alt="Guest" className="h-10 w-10" />
+                  <Image src={Mesaging} alt="Guest" className="h-10 w-10" />
                 </p>
                 <div className="space-y-5">
-                <p>{guest.fullName}</p>
-                <p className="text-gray">{guest.guestTitle}</p>
+                  <p>{guest.fullName}</p>
+                  <p className="text-gray">{guest.guestTitle}</p>
                 </div>
-                </div>
-             
+              </div>
+
               <div className="flex justify-end mt-2">
                 <Button size="sm" onClick={() => handleEdit(index)}>
                   Edit

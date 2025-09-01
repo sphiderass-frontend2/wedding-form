@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import VendorPic from "@/public/assets/images/bgVendor.png";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
 import { Upload, Building, InstagramOutline } from "@/public/assets";
-import Resturant from '@/public/assets/images/resturant.png'
+import Resturant from "@/public/assets/images/resturant.png";
 import ResponseModal from "../components/ResponseModal";
 import { useRouter } from "next/navigation";
 import Step1 from "../components/form/StepOne";
@@ -27,9 +27,9 @@ interface FormData {
   description: string;
   category: string;
   numberOfAttendees: number;
-  date: string;                // ISO date string e.g. "2025-10-10"
-  startTime: string;           // "HH:mm"
-  endTime: string;             // "HH:mm"
+  date: string; // ISO date string e.g. "2025-10-10"
+  startTime: string; // "HH:mm"
+  endTime: string; // "HH:mm"
   venue: string;
   address: string;
   guestList: Guest[];
@@ -65,116 +65,111 @@ const InputField = ({
 );
 
 const SponsorForm = ({ onBack }: { onBack: () => void }) => {
-    const router = useRouter()
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, updateField, addGuest } = useWeddingStore();
-  const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
+  const {
+    createEvent: createEventApi,
+    uploadFile,
+    uploadPlaces,
+  } = useWedding();
 
-  const [modal, setModal] = useState(false)
-   const [state, setState] = useState({
-      banner: null as File | null,
-      bannerPreview: null as string | null,
-      orgName: '',
-      email: '',
-      description: '',
-      address: '',
-      selectedCategories: [] as string[],
-      isDragging: false,
-      successModal: false,
-    });
-    const handleInputChange = <K extends keyof FormData>(
-      field: K,
-      value: FormData[K],
-      guestIndex?: number
-    ) => {
-      if (guestIndex !== undefined) {
-        // Update a specific guest in guestList
-        useWeddingStore
-          .getState()
-          .updateGuest(guestIndex, { [field as string]: value } as any);
-      } else {
-        // Update top-level field
-        useWeddingStore.getState().updateField(field, value);
+  const [modal, setModal] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [state, setState] = useState({
+    banner: null as File | null,
+    bannerPreview: null as string | null,
+    orgName: "",
+    email: "",
+    description: "",
+    address: "",
+    selectedCategories: [] as string[],
+    isDragging: false,
+    successModal: false,
+  });
+  const handleInputChange = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K],
+    guestIndex?: number
+  ) => {
+    if (guestIndex !== undefined) {
+      // Update a specific guest in guestList
+      useWeddingStore
+        .getState()
+        .updateGuest(guestIndex, { [field as string]: value } as any);
+    } else {
+      // Update top-level field
+      useWeddingStore.getState().updateField(field, value);
+    }
+  };
+
+  const nextStep = () => {
+    let isValid = false;
+
+    if (step === 1 && formData.name?.trim()) isValid = true;
+    if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
+    if (step === 3 && formData.name?.trim()) isValid = true; // Example for step 3 validation
+
+    if (isValid) {
+      if (!completedSteps.includes(step)) {
+        setCompletedSteps((prev) => [...prev, step]);
       }
-    };
-    
-    
-    
-    const nextStep = () => {
-      let isValid = false;
-    
-      if (step === 1 && formData.name?.trim()) isValid = true;
-      if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
-      if (step === 3 && formData.name?.trim()) isValid = true; // Example for step 3 validation
-    
-      if (isValid) {
-        if (!completedSteps.includes(step)) {
-          setCompletedSteps((prev) => [...prev, step]);
-        }
-        if (step < 4) setStep(step + 1);
-      } else {
-        alert("Please complete this step before proceeding.");
+      if (step < 4) setStep(step + 1);
+    } else {
+      alert("Please complete this step before proceeding.");
+    }
+  };
+
+  const details = useWeddingStore((state) => state.formData);
+
+  const createEvent = async () => {
+    try {
+      // Clone details so we don't mutate state directly
+      let updatedDetails = { ...details };
+
+      // If invitationCard is a File, upload it first
+      if (updatedDetails.invitationCard instanceof File) {
+        const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
+        console.log("Uploaded URL:", uploadedUrl);
+
+        // Replace the File object with the URL returned from backend
+        updatedDetails.invitationCard = uploadedUrl;
       }
-    };
 
-    const details = useWeddingStore((state) => state.formData);
-
-    
-    const createEvent = async () => {
-      try {
-        // Clone details so we don't mutate state directly
-        let updatedDetails = { ...details };
-    
-        // If invitationCard is a File, upload it first
-        if (updatedDetails.invitationCard instanceof File) {
-          const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
-          console.log("Uploaded URL:", uploadedUrl);
-    
-          // Replace the File object with the URL returned from backend
-          updatedDetails.invitationCard = uploadedUrl;
-        }
-    
-        // Ensure numberOfAttendees is a number
-        if (typeof updatedDetails.numberOfAttendees === "string") {
-          updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
-        }
-
-        if (updatedDetails.venue) {
-          const placeId = await uploadPlaces(updatedDetails.venue);
-          console.log("Uploaded Place ID:", placeId);
-        
-          if (placeId) {
-            updatedDetails.venue = placeId; 
-          }
-        }
-        
-    
-        // Remove 'title' and 'rsvp' from each guest
-        if (Array.isArray(updatedDetails.guestList)) {
-          updatedDetails.guestList = updatedDetails.guestList.map(
-            (guest) => guest
-          );
-        }
-    
-        console.log("Updated Details Sent:", updatedDetails);
-    
-        const response = await createEventApi(updatedDetails);
-    
-        console.log("Event created successfully:", response);
-        setModal(true);
-      } catch (error) {
-        console.error("Error creating event:", error);
+      // Ensure numberOfAttendees is a number
+      if (typeof updatedDetails.numberOfAttendees === "string") {
+        updatedDetails.numberOfAttendees = Number(
+          updatedDetails.numberOfAttendees
+        );
       }
-    };
-    
-    
-    
-    
 
+      if (updatedDetails.venue) {
+        const placeId = await uploadPlaces(updatedDetails.venue);
+        console.log("Uploaded Place ID:", placeId);
 
+        if (placeId) {
+          updatedDetails.venue = placeId;
+        }
+      }
 
+      // Remove 'title' and 'rsvp' from each guest
+      if (Array.isArray(updatedDetails.guestList)) {
+        updatedDetails.guestList = updatedDetails.guestList.map(
+          (guest) => guest
+        );
+      }
 
+      console.log("Updated Details Sent:", updatedDetails);
+
+      const response = await createEventApi(updatedDetails);
+
+      console.log("Event created successfully:", response);
+      setModal(true);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  };
 
   return (
     <>
@@ -191,7 +186,10 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
 
         {/* Back Button */}
         <div className="absolute top-4 left-4 z-20">
-          <Button onClick={onBack} className="bg-white text-black shadow hidden md:block">
+          <Button
+            onClick={onBack}
+            className="bg-white text-black shadow hidden md:block"
+          >
             ← Back
           </Button>
         </div>
@@ -229,43 +227,50 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <section className="px-5 md:px-0">
+        <div className="  mt-5">
+          {step === 1 && (
+            <Step1
+              formData={formData}
+              onChange={(field, value) =>
+                handleInputChange(field as keyof FormData, value)
+              }
+            />
+          )}
+          {step === 2 && (
+            <Step2
+              formData={formData}
+              onChange={
+                handleInputChange as (
+                  field: string,
+                  value: string,
+                  guestIndex?: number
+                ) => void
+              }
+              setFormData={addGuest}
+            />
+          )}
+          {step === 3 && (
+            <Step3
+              formData={formData}
+              onChange={(field, value) =>
+                handleInputChange(field as keyof FormData, value)
+              }
+            />
+          )}
+          {step === 4 && <Preview formData={formData} />}
 
-      <div className="  mt-5">
-      {step === 1 && (
-        <Step1
-          formData={formData}
-          onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
-        />
-      )}
-{step === 2 && (
-  <Step2
-    formData={formData}
-    onChange={handleInputChange as (field: string, value: string, guestIndex?: number) => void}
-    setFormData={addGuest}
-  />
-)}
-{step === 3 && (
-  <Step3
-    formData={formData}
-    onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
-  />
-)}
-{step === 4 && <Preview formData={formData} />}
-
-
-      <div className="flex justify-end mt-10">
-      {step < 4 ? (
-  <Button onClick={nextStep} className="bg-accent text-white">
-    {step < 3 ? "Next" : "Save & Preview"}
-  </Button>
-) : (
-  <Button onClick={createEvent} className="bg-accent text-white">
-    Save
-  </Button>
-)}
-
-      </div>
-      </div>
+          <div className="flex justify-end mt-10">
+            {step < 4 ? (
+              <Button onClick={nextStep} className="bg-accent text-white">
+                {step < 3 ? "Next" : "Save & Preview"}
+              </Button>
+            ) : (
+              <Button onClick={createEvent} className="bg-accent text-white">
+                Save
+              </Button>
+            )}
+          </div>
+        </div>
       </section>
       {modal && (
         <ResponseModal
@@ -276,7 +281,6 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           onClose={() => (window.location.href = "/dashboard")}
         />
       )}
-     
     </>
   );
 };
