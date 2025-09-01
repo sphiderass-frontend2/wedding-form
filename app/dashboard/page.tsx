@@ -70,6 +70,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, updateField, addGuest } = useWeddingStore();
   const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
+  const [eventLink, setEventLink] = useState('');
 
   const [modal, setModal] = useState(false)
    const [state, setState] = useState({
@@ -150,7 +151,6 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         }
         
     
-        // Remove 'title' and 'rsvp' from each guest
         if (Array.isArray(updatedDetails.guestList)) {
           updatedDetails.guestList = updatedDetails.guestList.map(
             (guest) => guest
@@ -161,7 +161,8 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
         const response = await createEventApi(updatedDetails);
     
-        console.log("Event created successfully:", response);
+        console.log("Event created successfully:", response._id);
+        setEventLink(`https://weddingapp.vercel.app/events/${response._id}`);
         setModal(true);
       } catch (error) {
         console.error("Error creating event:", error);
@@ -272,7 +273,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           message="Copy Event Link"
           buttonText="Go to Events Page"
           title="Event Created Successfully!"
-          eventLink="https://myapp.com/events/12345"
+          eventLink={eventLink}
           onClose={() => (window.location.href = "/dashboard")}
         />
       )}
