@@ -33,7 +33,7 @@ const SignupForm = () => {
 
     try {
       const data = await register({
-       username,
+        username,
         email,
         password,
       });
@@ -78,7 +78,10 @@ const SignupForm = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox checked={agree} onCheckedChange={(val) => setAgree(Boolean(val))} />
+        <Checkbox
+          checked={agree}
+          onCheckedChange={(val) => setAgree(Boolean(val))}
+        />
         <p className="font-normal text-sm">
           I agree to Richlist’s{" "}
           <span className="text-accent">Terms & Conditions</span> &{" "}
@@ -88,7 +91,12 @@ const SignupForm = () => {
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      <Button className="w-full" type="button" onClick={handleSignup} disabled={loading}>
+      <Button
+        className="w-full"
+        type="button"
+        onClick={handleSignup}
+        disabled={loading}
+      >
         {loading ? "Signing Up..." : "Sign Up"}
       </Button>
 

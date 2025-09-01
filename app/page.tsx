@@ -17,7 +17,7 @@ const SignUp = () => {
         </div>
 
         {/* Signup Card */}
-        <div className="relative z-10 w-full rounded-4xl bg-background drop-shadow-custom p-4 md:p-6">
+        <div className="relative z-10 w-full rounded-4xl bg-white drop-shadow-custom p-4 md:p-6">
           <div className="space-y-2">
             {/* Title */}
             <h1 className="text-3xl font-semibold">Join The Richlist</h1>
@@ -27,7 +27,7 @@ const SignUp = () => {
 
             {/* Social Buttons */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
-              <button className="flex items-center justify-center gap-2 w-full rounded-3xl border border-gray p-3 md:py-4 md:px-6 text-sm font-normal">
+              <button className="flex items-center justify-center gap-2 w-full rounded-3xl border bg-white border-gray p-3 md:py-4 md:px-6 text-sm font-normal">
                 <Image src={Google} alt="google-icon" width={20} />
                 Sign in with Google
               </button>

@@ -28,6 +28,7 @@
 
   /* Inputs */
   --input-border-color: #b1b5c3;
+  --input-label-color: #000000;
 }
 
 /* Dark mode variables */
@@ -45,8 +46,7 @@
   --tab-secondary: #020236;
   --text-dim: #FFFFFF99;
 
-
-  
+  --input-label-color: #FFF;
 }
 
 
@@ -71,6 +71,12 @@
   /* Base colors - integrated with dark mode */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+
+  /* Inputs */
+  --color-input-border: var(--input-border-color);
+  --color-input-label: var(--input-label-color);
+
 }
 
 /* System preference detection - only apply if no data-theme is set */
