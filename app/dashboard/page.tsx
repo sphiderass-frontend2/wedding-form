@@ -269,9 +269,10 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </section>
       {modal && (
         <ResponseModal
-          message="You have successfully applied to become a vendor 🎉"
-          buttonText="Go back to Homepage"
-          title="Payment Successful!"
+          message="Copy Event Link"
+          buttonText="Go to Events Page"
+          title="Event Created Successfully!"
+          eventLink="https://myapp.com/events/12345"
           onClose={() => (window.location.href = "/dashboard")}
         />
       )}
