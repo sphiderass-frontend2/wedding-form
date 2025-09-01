@@ -13,13 +13,12 @@ import React, { useState } from "react";
 
 const SignupForm = () => {
   const route = useRouter();
-  const { register } = useAuth();
+  const { register, pending } = useAuth();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agree, setAgree] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSignup = async () => {
@@ -29,7 +28,6 @@ const SignupForm = () => {
     }
 
     setError("");
-    setLoading(true);
 
     try {
       const data = await register({
@@ -43,8 +41,6 @@ const SignupForm = () => {
       route.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to register");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -95,9 +91,9 @@ const SignupForm = () => {
         className="w-full"
         type="button"
         onClick={handleSignup}
-        disabled={loading}
+        disabled={pending}
       >
-        {loading ? "Signing Up..." : "Sign Up"}
+        {pending ? "Signing Up..." : "Sign Up"}
       </Button>
 
       <div className="flex items-center justify-center gap-2 text-lg font-medium">

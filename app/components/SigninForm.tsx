@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import React, { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 
 const SigninForm = () => {
   const route = useRouter();
-  const searchParams = useSearchParams();
+
   const { login, error, pending, dismissError } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -93,6 +93,7 @@ const SigninForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Input username or email address"
+          disabled={pending}
         />
         {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
@@ -104,6 +105,7 @@ const SigninForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Input password"
+          disabled={pending}
         />
 
         {errors.password && (
@@ -113,7 +115,7 @@ const SigninForm = () => {
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Checkbox />
+          <Checkbox disabled={pending} />
           <p className="font-normal text-sm">Remember Me </p>
         </div>
 
@@ -125,6 +127,7 @@ const SigninForm = () => {
       <Button
         className="w-full"
         type="submit"
+        disabled={pending}
         // onClick={() => route.push("/verify")}
       >
         {pending ? "Signing In..." : "Sign In"}
