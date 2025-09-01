@@ -13,13 +13,12 @@ import React, { useState } from "react";
 
 const SignupForm = () => {
   const route = useRouter();
-  const { register } = useAuth();
+  const { register, pending } = useAuth();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agree, setAgree] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSignup = async () => {
@@ -29,11 +28,10 @@ const SignupForm = () => {
     }
 
     setError("");
-    setLoading(true);
 
     try {
       const data = await register({
-       username,
+        username,
         email,
         password,
       });
@@ -43,8 +41,6 @@ const SignupForm = () => {
       route.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to register");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -78,7 +74,10 @@ const SignupForm = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <Checkbox checked={agree} onCheckedChange={(val) => setAgree(Boolean(val))} />
+        <Checkbox
+          checked={agree}
+          onCheckedChange={(val) => setAgree(Boolean(val))}
+        />
         <p className="font-normal text-sm">
           I agree to Richlist’s{" "}
           <span className="text-accent">Terms & Conditions</span> &{" "}
@@ -88,8 +87,13 @@ const SignupForm = () => {
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      <Button className="w-full" type="button" onClick={handleSignup} disabled={loading}>
-        {loading ? "Signing Up..." : "Sign Up"}
+      <Button
+        className="w-full"
+        type="button"
+        onClick={handleSignup}
+        disabled={pending}
+      >
+        {pending ? "Signing Up..." : "Sign Up"}
       </Button>
 
       <div className="flex items-center justify-center gap-2 text-lg font-medium">
