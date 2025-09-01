@@ -163,6 +163,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
         console.log("Event created successfully:", response._id);
         setEventLink(`https://weddingapp.vercel.app/events/${response._id}`);
+        localStorage.setItem("_id", response._id);
         setModal(true);
       } catch (error) {
         console.error("Error creating event:", error);
