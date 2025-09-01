@@ -93,8 +93,8 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
           <InputField
             label="Title/Relation"
             placeholder="Enter Title/Relation"
-            value={activeGuest.title}
-            onChange={(v) => onChange("title", v, activeGuestIndex!)}
+            value={activeGuest.guestTitle}
+            onChange={(v) => onChange("guestTitle", v, activeGuestIndex!)}
           />
 
           <h2 className="text-accent text-xl font-semibold mt-4">
@@ -123,7 +123,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
             label="RSVP Status *"
             options={rsvpOptions}
             value={activeGuest.rsvp}
-            onChange={(v) => onChange("rsvp", v, activeGuestIndex!)}
+            // onChange={(v) => onChange("rsvp", v, activeGuestIndex!)}
           />
 
           {/* Save button */}
@@ -146,7 +146,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
                 </p>
                 <div className="space-y-5">
                 <p>{guest.fullName}</p>
-                <p className="text-gray">{guest.title}</p>
+                <p className="text-gray">{guest.guestTitle}</p>
                 </div>
                 </div>
              

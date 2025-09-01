@@ -9,14 +9,14 @@ export const useWedding = () => {
 
   const uploadFile = useCallback(
     async (invitationCard: File): Promise<string> => {
+      if (!token) throw new Error("No auth token provided");
+  
       const formData = new FormData();
       formData.append("invitationCard", invitationCard);
   
       const response = await fetch(`${api}events/upload`, {
         method: "POST",
-        headers: token
-          ? { Authorization: `Bearer ${token}` } // no Content-Type here
-          : undefined,
+        headers: { Authorization: `Bearer ${token}` }, // no Content-Type needed
         body: formData,
       });
   
@@ -26,10 +26,39 @@ export const useWedding = () => {
       }
   
       const data = await response.json();
-      return data.url ?? data; // return uploaded file URL
+  
+      // Backend returns `fileUrls` array
+      if (Array.isArray(data.fileUrls) && data.fileUrls[0]) return data.fileUrls[0];
+      if (typeof data === "string") return data;
+  
+      throw new Error("Invalid upload response");
     },
     [token]
   );
+
+
+  const uploadPlaces = useCallback(
+    async (text: string): Promise<string | null> => {
+      const response = await fetch(`${api}events/get-location`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ text: text }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to create place");
+      }
+  
+      const data = await response.json();
+      return data[0]?.place_id ?? null; 
+    },
+    [token]
+  );
+  
   
 
   const createEvent = useCallback(
@@ -53,6 +82,6 @@ export const useWedding = () => {
     [token]
   );
 
-  return { uploadFile, createEvent };
+  return { uploadFile, createEvent, uploadPlaces };
 };
 

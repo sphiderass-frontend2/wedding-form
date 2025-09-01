@@ -69,7 +69,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, updateField, addGuest } = useWeddingStore();
-  const { createEvent: createEventApi, uploadFile } = useWedding();
+  const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
 
   const [modal, setModal] = useState(false)
    const [state, setState] = useState({
@@ -128,10 +128,8 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
         // If invitationCard is a File, upload it first
         if (updatedDetails.invitationCard instanceof File) {
-          const file = updatedDetails.invitationCard;
-    
-          // Upload file using your uploadFile function
-          const uploadedUrl = await uploadFile(file);
+          const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
+          console.log("Uploaded URL:", uploadedUrl);
     
           // Replace the File object with the URL returned from backend
           updatedDetails.invitationCard = uploadedUrl;
@@ -141,8 +139,26 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         if (typeof updatedDetails.numberOfAttendees === "string") {
           updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
         }
+
+        if (updatedDetails.venue) {
+          const placeId = await uploadPlaces(updatedDetails.venue);
+          console.log("Uploaded Place ID:", placeId);
+        
+          if (placeId) {
+            updatedDetails.venue = placeId; 
+          }
+        }
+        
     
-        // Now send event data (without File objects) to backend
+        // Remove 'title' and 'rsvp' from each guest
+        if (Array.isArray(updatedDetails.guestList)) {
+          updatedDetails.guestList = updatedDetails.guestList.map(
+            (guest) => guest
+          );
+        }
+    
+        console.log("Updated Details Sent:", updatedDetails);
+    
         const response = await createEventApi(updatedDetails);
     
         console.log("Event created successfully:", response);
@@ -151,6 +167,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         console.error("Error creating event:", error);
       }
     };
+    
     
     
     

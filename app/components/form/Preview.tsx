@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Calendar, Clock } from "@/public/assets";
+import { Calendar, Clock, Mesaging, Group } from "@/public/assets";
 
 interface Props {
   formData: any;
@@ -35,11 +35,32 @@ export default function Preview({ formData }: Props) {
 
       <div>
         <h1 className="text-3xl font-semibold">{formData.name}</h1>
-        <div>
-          <h1>
+        <div className="flex items-center gap-5 mt-3">
+          <h1 className="flex items-center gap-2">
             <Image src={Calendar} alt="calendar" /> {formData.date} &nbsp; &nbsp;
           </h1>
+          <h1 className="flex items-center gap-2">
+            <Image src={Clock} alt="calendar" /> {formData.startTime} &nbsp; &nbsp;
+          </h1>
         </div>
+
+        <div className="flex items-center gap-2 mt-3">
+          <Image src={Group} alt="location" className="inline mr-2" />
+          {formData.numberOfAttendees} Attendees
+        </div>
+
+        <div className="flex justify-between  mt-3 ">
+          <p className="text-black bg-[#FFE38F] flex justify-center px-5 rounded-full ">
+          {formData.category}
+
+          </p>
+        </div>
+
+        <div className="text-text-primary mt-3 space-y-5 bg-tab-secondary p-5 rounded-2xl">
+          <p className="font-semibold">About this event</p>
+
+          <p>{formData.description}</p>
+          </div>
 
     </div>
 
@@ -52,26 +73,30 @@ export default function Preview({ formData }: Props) {
 
 
 
-      {/* Step 1: Event Info */}
-      <div>
-        <h2 className="text-xl font-semibold text-accent mb-2">Event Info</h2>
-        <p><strong>Event Name:</strong> </p>
-        <p><strong>Date:</strong> {formData.eventDate}</p>
-        <p><strong>Location:</strong> {formData.eventLocation}</p>
-      </div>
+   
 
       {/* Step 2: Guest Info */}
-      <div>
+      <div className="bg-tab-primary p-5 rounded-2xl">
         <h2 className="text-xl font-semibold text-accent mb-2">Guest List</h2>
         {formData.guestList?.length > 0 ? (
           formData.guestList.map((guest: any, index: number) => (
-            <div key={index} className="mb-3 p-3 border rounded-lg">
-              <p><strong>Full Name:</strong> {guest.fullName}</p>
-              <p><strong>Title/Relation:</strong> {guest.title}</p>
-              <p><strong>Phone:</strong> {guest.phoneNumber}</p>
-              <p><strong>Email:</strong> {guest.email}</p>
-              <p><strong>RSVP:</strong> {guest.rsvp}</p>
-            </div>
+            <div key={index} className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary mt-3">
+            <div className="flex items-center gap-4">
+              <p className="bg-accent p-5 rounded-2xl">
+              <Image src={Mesaging} alt="Guest" className="h-10 w-10" />
+              </p>
+              <div className="space-y-5">
+              <p>{guest.fullName}</p>
+              <p className="text-gray">{guest.guestTitle}</p>
+              </div>
+              </div>
+           
+            {/* <div className="flex justify-end mt-2">
+              <Button size="sm" onClick={() => handleEdit(index)}>
+                Edit
+              </Button>
+            </div> */}
+          </div>
           ))
         ) : (
           <p className="text-gray-500">No guests added.</p>

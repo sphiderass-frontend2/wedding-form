@@ -7,7 +7,7 @@ interface Props {
   label?: string;
   options: string[];
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
 }
 
 export default function CategoryDropdown({
@@ -47,7 +47,7 @@ export default function CategoryDropdown({
                 option === value ? "bg-accent text-white" : "text-text-primary"
               }`}
               onClick={() => {
-                onChange(option);
+                onChange?.(option);
                 setOpen(false);
               }}
             >
