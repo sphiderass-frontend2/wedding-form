@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { Copy } from "@/public/assets";
+import Image from "next/image";
 
 type ResponseModalProps = {
   title: string;
@@ -62,15 +64,15 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
 
           {/* Show copy link section only if eventLink is passed */}
           {eventLink && (
-            <div className="flex flex-col items-center gap-2 w-full">
-              <p className="break-words text-sm text-gray">{eventLink}</p>
-              <Button
+            <div className="flex  items-center justify-between w-full border-text-gray/50 border p-4 rounded-full">
+              <p className="break-words text-xs">{eventLink}</p>
+              <button
                 onClick={handleCopy}
-                variant="outline"
-                className="w-full"
+                className="border-none text-sm cursor-pointer"
               >
-                {copied ? "Copied!" : "Copy Event Link"}
-              </Button>
+                {copied ? "Copied!" :  <Image src={Copy} alt="Copy" className="inline ml-2" />}
+               
+              </button>
             </div>
           )}
         </div>
