@@ -65,7 +65,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
           {/* Show copy link section only if eventLink is passed */}
           {eventLink && (
             <div className="flex  items-center justify-between w-full border-text-gray/50 border p-4 rounded-full">
-              <p className="break-words text-xs">{eventLink}</p>
+              <p className="break-words text-sm">{eventLink.slice(0, 25)}....</p>
               <button
                 onClick={handleCopy}
                 className="border-none text-sm cursor-pointer"

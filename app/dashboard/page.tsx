@@ -277,7 +277,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           message="Copy Event Link"
           buttonText="Go to Events Page"
           title="Event Created Successfully!"
-          eventLink="https://myapp.com/events/12345"
+          eventLink={eventLink}
           onClose={() => (window.location.href = "/dashboard")}
         />
       )}
