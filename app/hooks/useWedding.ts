@@ -82,6 +82,26 @@ export const useWedding = () => {
     [token]
   );
 
-  return { uploadFile, createEvent, uploadPlaces };
+  const getEvent = useCallback(
+    async (id: string): Promise<any> => {
+      const response = await fetch(`${api}events/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch event");
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+  return { uploadFile, createEvent, uploadPlaces, getEvent };
 };
 
