@@ -79,7 +79,7 @@ const Testimonial = () => {
         <div className="space-y-8">
           <h5 className="font-bold text-xl text-text-primary">TESTIMONIALS</h5>
           <h1 className="font-bold text-4xl md:text-7xl lg:text-7xl text-text-primary md:max-w-4xl">
-            DON'T TAKE OUR <span className="outline-text">WORD FOR IT</span>
+          DON&apos;T TAKE OUR <span className="outline-text">WORD FOR IT</span>
           </h1>
         </div>
       </div>

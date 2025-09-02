@@ -27,7 +27,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
     }, 60000); // update every minute
 
     return () => clearInterval(timer);
-  }, []);
+  }, [timeLeft]);
 
   return (
     <div className="flex gap-6 text-center text-xl text-text-primary">
