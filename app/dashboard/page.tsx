@@ -11,6 +11,8 @@ import Step3 from "../components/form/StepThree";
 import Preview from "../components/form/Preview";
 import { useWeddingStore } from "../store/useWeddingStore";
 import { useWedding } from "../hooks/useWedding";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Guest {
   fullName: string;
@@ -140,6 +142,8 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
 
       } catch (error) {
         console.error("Error creating event:", error);
+        toast.error("error")
+
       } finally {
         setLoading(false);
       }
@@ -149,6 +153,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   return (
     <>
 
+            <ToastContainer />
 
       {loading && <LoadingModal />}
       {/* Top Section with Background */}
@@ -169,13 +174,13 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           </Button>
         </div>
 
-        <div className="absolute z-20 top-8 left-1/2 -translate-x-1/2 text-white text-center">
+        <div className="absolute z-20 top-24 md:top-8 w-full  left-1/2 -translate-x-1/2 text-white text-center">
           <h1 className="font-semibold text-3xl">Create Event</h1>
-          <p className="text-lg">Dream it, Plan it, own it, Your event journey starts here </p>
+          <p className="md:text-lg">Dream it, Plan it, own it, Your event journey starts here </p>
         </div>
 
         {/* Step Indicators */}
-        <div className="absolute z-20 top-24 left-1/2 -translate-x-1/2 text-white mt-8">
+        <div className="absolute z-20 top-44 md:top-24 left-1/2 -translate-x-1/2 text-white mt-8">
           <div className="flex items-center  w-[300px] md:w-[350px]">
             {[1, 2, 3].map((item, index) => (
               <React.Fragment key={item}>

@@ -5,6 +5,9 @@ import { Facebook, Google, Logo } from "@/public/assets";
 import SignupForm from "./components/SignupForm";
 import Threads from "./components/Threads";
 import { useAuth } from "./hooks/useAuth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const SignUp = () => {
   const { pending } = useAuth();
@@ -12,6 +15,7 @@ const SignUp = () => {
   return (
     <>
       {/* Full Page Loading Overlay */}
+      <ToastContainer />
       {pending && (
         <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="text-center">

@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import { toast } from "react-toastify";
 
 const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -50,10 +51,12 @@ export const useWedding = () => {
   
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        toast.error("Error adding location. Please try again.");
         throw new Error(errorData?.message || "Failed to create place");
       }
   
       const data = await response.json();
+      toast.success("Location added successfully!")
       return data[0]?.place_id ?? null; 
     },
     [token]
@@ -71,17 +74,22 @@ export const useWedding = () => {
         },
         body: JSON.stringify(eventData),
       });
-
+  
+      const data = await response.json().catch(() => null);
+  
       if (!response.ok) {
-        throw new Error("Failed to create event");
+        const errorMessage = data?.message || "Error creating event. Please try again.";
+        console.log("Create Event Error Response:", errorMessage);
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
       }
-
-      const data = await response.json();
+  
       localStorage.setItem("_id", data._id);
       return data;
     },
     [token]
   );
+  
 
   const getEvent = useCallback(
     async (id: string): Promise<any> => {
