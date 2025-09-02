@@ -18,7 +18,6 @@ import {
 import ScanCode from "../../component/modals/ScanCode";
 import EventDetails from "../../component/modals/EventDetails";
 import EngagementGraph from "../../component/EngagementGraph";
-import { MoreVerticalIcon } from "lucide-react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { Button } from "@/app/components/ui/button";
 import { useWedding } from "@/app/hooks/useWedding";

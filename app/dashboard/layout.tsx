@@ -54,7 +54,7 @@ export default function DashboardLayout({
     }
   };
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const checkTheme = () => {

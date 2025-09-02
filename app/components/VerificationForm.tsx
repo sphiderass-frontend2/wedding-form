@@ -29,7 +29,8 @@ const VerificationForm = () => {
       </Button>
 
       <div className="flex items-center justify-center gap-2 text-lg font-medium">
-        <p className="text-gray ">If you didn't receive a code!</p>
+      <p className="text-gray">If you didn&apos;t receive a code!</p>
+
 
         <button className="text-accent">Resend</button>
       </div>

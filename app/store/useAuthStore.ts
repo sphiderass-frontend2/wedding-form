@@ -11,7 +11,7 @@ const FIVE_DAYS = 5 * 24 * 60 * 60 * 1000; // 5 days in ms
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       token: null,
 
       // Save token and expiry

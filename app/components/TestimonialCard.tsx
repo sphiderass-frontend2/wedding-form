@@ -43,7 +43,7 @@ export default function TestimonialCard({
 
       {/* Review */}
       <p className=" text-sm leading-relaxed italic text-gray">
-        "{review}"
+      &quot;{review}&quot;
       </p>
 
       {/* Date */}

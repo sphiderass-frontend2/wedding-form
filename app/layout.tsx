@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 import './globals.css';
 import { ReactNode } from 'react';
 

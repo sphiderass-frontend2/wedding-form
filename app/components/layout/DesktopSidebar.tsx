@@ -28,7 +28,6 @@ const DesktopSidebar: FC<DesktopSidebarProps> = ({
   sidebarItems,
   sidebarExpanded,
   toggleSidebar,
-  settingPage,
   pathname,
 }) => {
   const route = useRouter();

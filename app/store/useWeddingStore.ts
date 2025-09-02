@@ -10,7 +10,7 @@ interface Guest {
   emailAddress: string;
 }
 
-interface FormData {
+export interface FormData {
   name: string;
   description: string;
   category: string;

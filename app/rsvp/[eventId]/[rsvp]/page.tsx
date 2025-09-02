@@ -16,7 +16,7 @@ export default function RSVPPage({
   const { invitationDecision, getEvent } = useWedding();
 
   const [event, setEvent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [modalMessage, setModalMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [processing, setProcessing] = useState(true);
