@@ -10,7 +10,11 @@ import { ThemeProvider } from "../lib/theme-provider";
 const sidebarItems = [
   { icon: Home, text: "Home", href: "" },
   { icon: Home, text: "Event", href: "/dashboard" },
-  { icon: OrganizationIcon, text: "Organization", href: "/dashboard/organization" },
+  {
+    icon: OrganizationIcon,
+    text: "Organization",
+    href: "/dashboard/organization/1/analytics",
+  },
   { icon: Wallet, text: "Wallet", href: "/dashboard/wallet" },
   { icon: Support, text: "Support", href: "/dashboard/support" },
 ];

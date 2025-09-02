@@ -89,7 +89,7 @@ const EventDetail = () => {
 
 
    
-<section className='px-10'>
+<section className='px-3 md:px-10'>
 
 
       {openForm ? (
