@@ -248,20 +248,22 @@ export const useWedding = () => {
   );
 
   const updateRSVPStatus = useCallback(
-    async (rsvpId: string, status: "accepted" | "declined"): Promise<any> => {
+    async (
+      rsvpId: string,
+      decision: "pending" | "approve" | "decline"
+    ): Promise<any> => {
       const apiUrl = api?.endsWith("/") ? api : `${api}/`;
 
-      console.log(`Updating RSVP ${rsvpId} status to:`, status);
+      console.log(`Updating RSVP ${rsvpId} decision to:`, decision);
 
       const response = await fetch(
-        `${apiUrl}organisation/rsvps/${rsvpId}/status`,
+        `${apiUrl}organisation/${rsvpId}/${decision}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ status }),
         }
       );
 

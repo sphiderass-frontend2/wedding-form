@@ -491,7 +491,12 @@ function Analytics() {
                 <tr>
                   <th className="font-normal">Full Name</th>
                   <th className="font-normal">Email</th>
-                  <th className="font-normal">Phone</th>
+
+                  {activeTab === "attendees" ? (
+                    <th className="font-normal">Date & Time</th>
+                  ) : (
+                    <th className="font-normal">Relation</th>
+                  )}
                   {activeTab === "attendees" && (
                     <th className="font-normal">Action</th>
                   )}
@@ -538,7 +543,13 @@ function Analytics() {
                         </div>
                       </td>
                       <td>{rsvp.emailAddress}</td>
-                      <td>{rsvp.phoneNumber}</td>
+
+                      {activeTab === "attendees" ? (
+                        <td>{rsvp.requestedAt}</td>
+                      ) : (
+                        <td>{rsvp.rsvpStatus}</td>
+                      )}
+
                       <td>
                         {activeTab === "attendees" &&
                           rsvp.rsvpStatus === "pending" && (
@@ -546,7 +557,7 @@ function Analytics() {
                               <Button
                                 className="bg-[#009311] text-white text-sm"
                                 onClick={() =>
-                                  handleRSVPStatusUpdate(rsvp.id, "accepted")
+                                  handleRSVPStatusUpdate(rsvp.id, "approved")
                                 }
                               >
                                 Accept
