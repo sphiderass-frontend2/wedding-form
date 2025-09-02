@@ -17,7 +17,7 @@ interface Guest {
 
 export default function Preview({ formData }: Props) {
   return (
-    <section className="p-6 text-text-primary space-y-6">
+    <section className="p-6 text-text-primary space-y-6 rounded-2xl">
 
          {/* Step 3: Invitation Card */}
          <section className="bg-tab-primary px-5 py-7 rounded-2xl space-y-4">

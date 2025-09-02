@@ -49,6 +49,8 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const { formData, addGuest } = useWeddingStore();
   const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
   const [eventLink, setEventLink] = useState('');
+  const [orgLink, setOrgLink] = useState('');
+
   const [loading, setLoading] = useState(false);
 
   const [modal, setModal] = useState(false)
@@ -85,6 +87,13 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         alert("Please complete this step before proceeding.");
       }
     };
+
+    function prevStep(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+      event.preventDefault();
+      if (step > 1) {
+        setStep(step - 1);
+      }
+    }
 
     const details = useWeddingStore((state) => state.formData);
 
@@ -125,6 +134,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
         console.log("Event created successfully:", response._id);
         setEventLink(`https://richlist-rouge.vercel.app/event/${response._id}/join`);
+        setOrgLink(`https://richlist-rouge.vercel.app/organization/${response._id}/`);
         localStorage.setItem("_id", response._id);
         setModal(true);
 
@@ -134,7 +144,8 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         setLoading(false);
       }
     };
-    
+
+  
   return (
     <>
 
@@ -190,7 +201,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         </div>
       </div>
 
-      <section className="px-5 md:px-0">
+      <section className="px-2 md:px-0">
 
       <div className="  mt-5">
       {step === 1 && (
@@ -215,11 +226,21 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
 {step === 4 && <Preview formData={formData} />}
 
 
-      <div className="flex justify-end mt-10">
-      {step < 4 ? (
-  <Button onClick={nextStep} className="bg-accent text-white">
-    {step < 3 ? "Next" : "Save & Preview"}
-  </Button>
+      <div className={`flex ${step > 1 ? "justify-between" : "justify-end"}  mt-10`}>
+      {step > 1 && (
+    <Button
+      onClick={prevStep}
+      className="bg-gray-300 text-black hover:bg-gray-400"
+    >
+      Back
+    </Button>
+  )}
+
+  {/* Next / Save & Preview / Save */}
+  {step < 4 ? (
+    <Button onClick={nextStep} className="bg-accent text-white">
+      {step < 3 ? "Next" : "Save & Preview"}
+    </Button>
 ) : (
   <Button onClick={createEvent} className="bg-accent text-white">
     Save
@@ -235,7 +256,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           buttonText="Go to Events Page"
           title="Event Created Successfully!"
           eventLink={eventLink}
-          onClose={() => (window.location.href = `${eventLink}`)}
+          onClose={() => (window.location.href = `${orgLink}`)}
         />
       )}
      

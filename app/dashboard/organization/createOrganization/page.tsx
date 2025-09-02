@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Upload } from '@/assets';
-import ResponseModal from '@/components/ResponseModal';
+import { Button } from '../../../components/ui/button';
+import { Upload } from '@/public/assets';
+import ResponseModal from '../../../components/ResponseModal';
 import { useRouter } from 'next/navigation'; 
 const categories = [
   'Concert',

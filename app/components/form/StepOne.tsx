@@ -5,6 +5,7 @@ import InputField from "../InputField";
 import CategoryDropdown from "../CategoryDropdown";
 import { Button } from "../ui/button";
 import { FormData } from "@/app/store/useWeddingStore";
+import { useWedding } from "@/app/hooks/useWedding";
 
 interface Props {
   formData: FormData;
@@ -14,8 +15,17 @@ interface Props {
 const categories = ["Concert", "Rave", "Wedding", "Fest", "Birthday"];
 
 export default function Step1({ formData, onChange }: Props) {
+  const { uploadPlaces } = useWedding();
+
+  const mapLiveLocation = async () => {
+    const places = await uploadPlaces(formData.venue);
+    console.log(places);
+  }
+
+
+
   return (
-    <div className="mt-2 bg-tab-primary p-5">
+    <div className="mt-2 bg-tab-primary p-5 rounded-2xl">
       <h1 className="text-accent text-2xl font-semibold">Events Info</h1>
       <p className="mt-2 text-accent text-xl">Get Started With Your Event</p>
 
@@ -102,7 +112,7 @@ export default function Step1({ formData, onChange }: Props) {
             onChange={(v) => onChange("venue", v)}
           />
 
-          <Button className="font-semibold text-base">
+          <Button className="font-semibold text-base" onClick={mapLiveLocation}>
             Add Map Live Location
           </Button>
 
