@@ -5,16 +5,18 @@ import Image from "next/image";
 
 type ResponseModalProps = {
   title: string;
-  message?: string;   // info or status message
+  message?: string; 
   note?: string;
+  secmessage?: string;
   buttonText?: string;
-  eventLink?: string; // 👈 new prop for event link
+  eventLink?: string; 
   onClose?: () => void;
 };
 
 const ResponseModal: React.FC<ResponseModalProps> = ({
   onClose,
   message,
+  secmessage,
   note,
   title,
   buttonText,
@@ -47,6 +49,10 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
         <div className="flex flex-col items-center gap-5 text-center">
           <h2 className="text-3xl font-medium">{title}</h2>
 
+
+          {message && <p className="text-gray">{message}</p>}
+
+
           {note && (
             <p className="text-gray">
               Note: <span className="text-black">{note}</span>
@@ -60,7 +66,7 @@ const ResponseModal: React.FC<ResponseModalProps> = ({
           </div>
 
           {/* Show message if available */}
-          {message && <p className="text-gray">{message}</p>}
+          {secmessage && <p className="text-gray">{secmessage}</p>}
 
           {/* Show copy link section only if eventLink is passed */}
           {eventLink && (

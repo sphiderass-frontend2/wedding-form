@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import VendorPic from "@/public/assets/images/bgVendor.png";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
-import { Upload, Building, InstagramOutline } from "@/public/assets";
-import Resturant from "@/public/assets/images/resturant.png";
 import ResponseModal from "../components/ResponseModal";
 import { useRouter } from "next/navigation";
 import Step1 from "../components/form/StepOne";
@@ -142,39 +140,31 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           console.log("Uploaded Place ID:", placeId);
 
           if (placeId) {
-            updatedDetails.venue = placeId;
+            updatedDetails.venue = placeId; 
           }
-          // If placeId is null, keep the original venue text
-        } catch (error) {
-          console.warn("Failed to upload venue, using original text:", error);
-          // Keep the original venue text if upload fails
         }
+        if (Array.isArray(updatedDetails.guestList)) {
+          updatedDetails.guestList = updatedDetails.guestList.map(
+            (guest) => guest
+          );
+        }
+    
+        console.log("Updated Details Sent:", updatedDetails);
+    
+        const response = await createEventApi(updatedDetails);
+    
+        console.log("Event created successfully:", response._id);
+        setEventLink(`https://richlist.vercel.app/event/${response._id}/join`);
+        localStorage.setItem("_id", response._id);
+        setModal(true);
+
+      } catch (error) {
+        console.error("Error creating event:", error);
+      } finally {
+        setLoading(false);
       }
-      if (Array.isArray(updatedDetails.guestList)) {
-        updatedDetails.guestList = updatedDetails.guestList.map((guest) => ({
-          fullName: guest.fullName,
-          guestTitle: guest.guestTitle,
-          phoneNumber: guest.phoneNumber,
-          emailAddress: guest.emailAddress,
-        }));
-      }
-
-      console.log("Updated Details Sent:", updatedDetails);
-
-      const response = await createEventApi(updatedDetails);
-
-      console.log("Event created successfully:", response._id);
-      setEventLink(`https://weddingapp.vercel.app/event/${response._id}`);
-      localStorage.setItem("_id", response._id);
-      setModal(true);
-    } catch (error: any) {
-      console.error("Error creating event:", error);
-      setError(error.message || "Failed to create event. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    };
+    
   return (
     <>
       {loading && <LoadingModal />}
@@ -320,7 +310,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </section>
       {modal && (
         <ResponseModal
-          message="Copy Event Link"
+          secmessage="Copy Event Link"
           buttonText="Go to Events Page"
           title="Event Created Successfully!"
           eventLink={eventLink}

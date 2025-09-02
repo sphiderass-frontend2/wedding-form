@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
-import { Button } from '../../components/ui/button';
+import { Button } from '../../../components/ui/button';
 import InputField from '@/app/components/InputField';
-import CategoryDropdown from '@/app/components/CategoryDropdown';
 import { useParams } from "next/navigation";
 import { useWedding } from '@/app/hooks/useWedding';
+import ResponseModal from '@/app/components/ResponseModal';
 
 
 
 
 
 const EventDetail = () => {
-  const { getEvent }   = useWedding();
+  const { getEvent, inviteIndvidually }   = useWedding();
   const [openForm, setOpenForm] = useState(false)
   const [event, setEvent] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -21,8 +21,8 @@ const EventDetail = () => {
     guestTitle: "",
     phoneNumber: "",
     emailAddress: "",
-    rsvpStatus: "",
   });
+  const [showResponseModal, setShowResponseModal] = useState(false);
   
   const params = useParams();
    const id = params?.id; 
@@ -44,15 +44,21 @@ const EventDetail = () => {
     }
 , [id, getEvent]);
 
-    const rsvpOptions = ["RSVP Open", "RSVP closed"];
 
     const handleChange = (field: string, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
       };
       
-      const handleSave = () => {
+      const handleSave = async () => {
         
         console.log("Form Data Submitted:", formData);
+        try {
+          const response = await inviteIndvidually(id as string, formData);
+          setShowResponseModal(true);
+          console.log("Invitation sent successfully:", response);
+        } catch (error) {
+          console.error("Error sending invitation:", error);
+        }
         setOpenForm(false); 
       }
    
@@ -65,7 +71,7 @@ const EventDetail = () => {
     <div className="relative w-full h-[80vh] overflow-hidden">
   {event?.invitationCard ? (
     <Image
-      src="https://storage.googleapis.com/richlist-bucket/invitationCard/68b4a41a754c24cb3eaf3f3f/9ca5b022d6c9ab85940c?GoogleAccessId=richlist-event%40richlist-470701.iam.gserviceaccount.com&Expires=1756758666&Signature=tlnNIuXSqjK9VSqFznrjhEqC9hqbrwMbeJu1%2BbK6SOoxGQn0mnKeAPvZbMpYy5%2FIqtx%2Fg3jyX1mao6GwG3iRCIjDD%2Bdc1TkJlUZzUr3u%2FiT9SURxNNg%2BfdhIjMHlc3NR0cIeGyk9%2B3OkmqN4x6HnmC2cAGorA3hTdr6NUEYhwKgvRa%2Fa4a86HosEcqMKt%2BxDLnTq%2FrTebtBQcYdsQEnKoMxQPzUOk0QMtCuwfEPB%2BgcRsC95p8BGux%2FzPUC2KaTDnODAX%2BDkT4IznQb78nIStRh9WTU%2BD6OL6LX16g8eNNTcEspbsS7li6J4DQlAF0d4C8OeQtdJ2ejCYfYVOrsiUg%3D%3D"
+    src={event?.invitationCard as string | StaticImageData}
       alt="Invitation Card"
       fill
       className="object-cover"
@@ -121,17 +127,6 @@ const EventDetail = () => {
                    placeholder="Enter Email"
                   value={formData.emailAddress}
                    onChange={(value: string) => handleChange("emailAddress", value)}
-                 />
-       
-                 <h2 className="text-accent text-xl font-semibold mt-4">
-                   RSVP Management
-                 </h2>
-       
-                 <CategoryDropdown
-                   label="RSVP Status *"
-                   options={rsvpOptions}
-                   value={formData.rsvpStatus}
-                   onChange={(value: string) => handleChange("rsvpStatus", value)}
                  />
        
                  {/* Save button */}
@@ -231,6 +226,16 @@ const EventDetail = () => {
 
           )}
     </section>
+
+    {showResponseModal && (
+      <ResponseModal
+        title="Request Sent Successfully!"
+        buttonText="Close"
+        onClose={() => setShowResponseModal(false)}
+        message='You have successfully requested to go to this event. '
+        note='Please wait for the host to approve your request.'
+        />
+        )}
     </>
   );
 };
