@@ -27,9 +27,9 @@ interface FormData {
   description: string;
   category: string;
   numberOfAttendees: number;
-  date: string;               
-  startTime: string;           // "HH:mm"
-  endTime: string;             // "HH:mm"
+  date: string;
+  startTime: string; // "HH:mm"
+  endTime: string; // "HH:mm"
   venue: string;
   address: string;
   guestList: Guest[];
@@ -51,99 +51,174 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, updateField, addGuest } = useWeddingStore();
-  const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
-  const [eventLink, setEventLink] = useState('');
+  const {
+    createEvent: createEventApi,
+    uploadFile,
+    uploadPlaces,
+  } = useWedding();
+  const [eventLink, setEventLink] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const [modal, setModal] = useState(false)
-    const handleInputChange = <K extends keyof FormData>(
-      field: K,
-      value: FormData[K],
-      guestIndex?: number
-    ) => {
-      if (guestIndex !== undefined) {
-        useWeddingStore
-          .getState()
-          .updateGuest(guestIndex, { [field as string]: value } as any);
-      } else {
-        // Update top-level field
-        useWeddingStore.getState().updateField(field, value);
+  const [modal, setModal] = useState(false);
+  const handleInputChange = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K],
+    guestIndex?: number
+  ) => {
+    if (guestIndex !== undefined) {
+      useWeddingStore
+        .getState()
+        .updateGuest(guestIndex, { [field as string]: value } as any);
+    } else {
+      // Update top-level field
+      useWeddingStore.getState().updateField(field, value);
+    }
+  };
+
+  const nextStep = () => {
+    let isValid = false;
+
+    if (step === 1 && formData.name?.trim() && formData.venue?.trim())
+      isValid = true;
+    if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
+    if (step === 3 && formData.name?.trim()) isValid = true;
+
+    if (isValid) {
+      if (!completedSteps.includes(step)) {
+        setCompletedSteps((prev) => [...prev, step]);
       }
-    };
-    
-    
-    
-    const nextStep = () => {
-      let isValid = false;
-    
-      if (step === 1 && formData.name?.trim()) isValid = true;
-      if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
-      if (step === 3 && formData.name?.trim()) isValid = true; 
-    
-      if (isValid) {
-        if (!completedSteps.includes(step)) {
-          setCompletedSteps((prev) => [...prev, step]);
-        }
-        if (step < 4) setStep(step + 1);
+      if (step < 4) setStep(step + 1);
+    } else {
+      if (step === 1) {
+        alert(
+          "Please complete the event name and venue fields before proceeding."
+        );
       } else {
         alert("Please complete this step before proceeding.");
       }
-    };
+    }
+  };
 
-    const details = useWeddingStore((state) => state.formData);
+  const details = useWeddingStore((state) => state.formData);
 
-    
-    const createEvent = async () => {
-      setLoading(true);
-      try {
-        let updatedDetails = { ...details };
-    
-        if (updatedDetails.invitationCard instanceof File) {
-          const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
-          console.log("Uploaded URL:", uploadedUrl);
-    
-          updatedDetails.invitationCard = uploadedUrl;
-        }
-    
-        if (typeof updatedDetails.numberOfAttendees === "string") {
-          updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
-        }
+  const createEvent = async () => {
+    setLoading(true);
+    setError(""); // Clear previous errors
 
-        if (updatedDetails.venue) {
+    try {
+      // Validate required fields before processing
+      if (!details.venue?.trim()) {
+        throw new Error("Venue is required. Please fill in the venue field.");
+      }
+      if (!details.name?.trim()) {
+        throw new Error("Event name is required.");
+      }
+      if (!details.description?.trim()) {
+        throw new Error("Event description is required.");
+      }
+      if (!details.date?.trim()) {
+        throw new Error("Event date is required.");
+      }
+
+      let updatedDetails = { ...details };
+
+      if (updatedDetails.invitationCard instanceof File) {
+        const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
+        console.log("Uploaded URL:", uploadedUrl);
+
+        updatedDetails.invitationCard = uploadedUrl;
+      }
+
+      if (typeof updatedDetails.numberOfAttendees === "string") {
+        updatedDetails.numberOfAttendees = Number(
+          updatedDetails.numberOfAttendees
+        );
+      }
+
+      if (updatedDetails.venue) {
+        try {
           const placeId = await uploadPlaces(updatedDetails.venue);
           console.log("Uploaded Place ID:", placeId);
-        
-          if (placeId) {
-            updatedDetails.venue = placeId; 
-          }
-        }
-        if (Array.isArray(updatedDetails.guestList)) {
-          updatedDetails.guestList = updatedDetails.guestList.map(
-            (guest) => guest
-          );
-        }
-    
-        console.log("Updated Details Sent:", updatedDetails);
-    
-        const response = await createEventApi(updatedDetails);
-    
-        console.log("Event created successfully:", response._id);
-        setEventLink(`https://weddingapp.vercel.app/event/${response._id}`);
-        localStorage.setItem("_id", response._id);
-        setModal(true);
 
-      } catch (error) {
-        console.error("Error creating event:", error);
-      } finally {
-        setLoading(false);
+          if (placeId) {
+            updatedDetails.venue = placeId;
+          }
+          // If placeId is null, keep the original venue text
+        } catch (error) {
+          console.warn("Failed to upload venue, using original text:", error);
+          // Keep the original venue text if upload fails
+        }
       }
-    };
-    
+      if (Array.isArray(updatedDetails.guestList)) {
+        updatedDetails.guestList = updatedDetails.guestList.map((guest) => ({
+          fullName: guest.fullName,
+          guestTitle: guest.guestTitle,
+          phoneNumber: guest.phoneNumber,
+          emailAddress: guest.emailAddress,
+        }));
+      }
+
+      console.log("Updated Details Sent:", updatedDetails);
+
+      const response = await createEventApi(updatedDetails);
+
+      console.log("Event created successfully:", response._id);
+      setEventLink(`https://weddingapp.vercel.app/event/${response._id}`);
+      localStorage.setItem("_id", response._id);
+      setModal(true);
+    } catch (error: any) {
+      console.error("Error creating event:", error);
+      setError(error.message || "Failed to create event. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-
-
       {loading && <LoadingModal />}
+
+      {/* Error Display */}
+      {error && (
+        <div className="fixed top-4 right-4 z-50 bg-red-50 border border-red-200 rounded-md p-4 max-w-md">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-red-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Error Creating Event
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{error}</p>
+              </div>
+              <div className="mt-4">
+                <div className="-mx-2 -my-1.5 flex">
+                  <button
+                    type="button"
+                    onClick={() => setError("")}
+                    className="bg-red-50 px-2 py-1.5 rounded-md text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Section with Background */}
       <div className="relative w-full h-[40vh] overflow-hidden">
         <Image

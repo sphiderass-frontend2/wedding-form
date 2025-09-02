@@ -13,8 +13,6 @@ interface Props {
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const rsvpOptions = ["RSVP Open", "RSVP closed"];
-
 export default function Step2({ formData, onChange, setFormData }: Props) {
   const [showPreview, setShowPreview] = useState(false);
   const [activeGuestIndex, setActiveGuestIndex] = useState<number | null>(0);
@@ -25,10 +23,9 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
         ...(prev.guestList || []),
         {
           fullName: "",
-          title: "",
+          guestTitle: "",
           phoneNumber: "",
-          email: "",
-          rsvp: "",
+          emailAddress: "",
         },
       ];
       return { ...prev, guestList: updatedList };
@@ -111,17 +108,6 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
             placeholder="Enter Email"
             value={activeGuest.emailAddress}
             onChange={(v) => onChange("emailAddress", v, activeGuestIndex!)}
-          />
-
-          <h2 className="text-accent text-xl font-semibold mt-4">
-            RSVP Management
-          </h2>
-
-          <CategoryDropdown
-            label="RSVP Status *"
-            options={rsvpOptions}
-            value={activeGuest.rsvp}
-            // onChange={(v) => onChange("rsvp", v, activeGuestIndex!)}
           />
 
           {/* Save button */}
