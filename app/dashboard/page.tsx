@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
-import VendorPic from "@/public/assets/images/bgVendor.png";
+import VendorPic from "@/public/assets/images/sponsor.jpg";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
 import ResponseModal from "../components/ResponseModal";
@@ -157,10 +157,10 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           src={VendorPic}
           alt="Vendor background"
           fill
-          className="object-cover rounded-2xl"
+          className="object-cover rounded-2xl  rotate-180"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/40 rounded-2xl" />
 
         {/* Back Button */}
         <div className="absolute top-4 left-4 z-20">
@@ -169,13 +169,18 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           </Button>
         </div>
 
+        <div className="absolute z-20 top-8 left-1/2 -translate-x-1/2 text-white text-center">
+          <h1 className="font-semibold text-3xl">Create Event</h1>
+          <p className="text-lg">Dream it, Plan it, own it, Your event journey starts here </p>
+        </div>
+
         {/* Step Indicators */}
-        <div className="absolute z-20 top-24 left-1/2 -translate-x-1/2 text-white">
-          <div className="flex items-center  w-[300px] md:w-[600px]">
+        <div className="absolute z-20 top-24 left-1/2 -translate-x-1/2 text-white mt-8">
+          <div className="flex items-center  w-[300px] md:w-[350px]">
             {[1, 2, 3].map((item, index) => (
               <React.Fragment key={item}>
                 <div
-                  className={`px-4 py-2 md:py-5 md:px-8 rounded-full flex items-center justify-center text-base md:text-3xl transition-colors duration-300
+                  className={`px-4 py-2 md:py-2 md:px-5 rounded-full flex items-center justify-center text-base md:text-xl transition-colors duration-300
                     ${
                       completedSteps.includes(item)
                         ? "bg-accent"
