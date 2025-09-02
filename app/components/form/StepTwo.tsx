@@ -1,19 +1,25 @@
 "use client";
 
 import InputField from "../InputField";
-import CategoryDropdown from "../CategoryDropdown";
 import { Button } from "../ui/button";
-import { useState, useEffect } from "react";
+import { useState, } from "react";
 import Image from "next/image";
 import { Mesaging } from "@/public/assets";
+import { FormData } from "@/app/store/useWeddingStore";
+
+interface Guest {
+  fullName: string;
+  guestTitle: string;
+  phoneNumber: string;
+  emailAddress: string;
+}
 
 interface Props {
-  formData: any;
+  formData: FormData;
   onChange: (field: string, value: string, guestIndex?: number) => void;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const rsvpOptions = ["RSVP Open", "RSVP closed"];
 
 export default function Step2({ formData, onChange, setFormData }: Props) {
   const [showPreview, setShowPreview] = useState(false);
@@ -119,13 +125,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
             RSVP Management
           </h2>
 
-          <CategoryDropdown
-            label="RSVP Status *"
-            options={rsvpOptions}
-            value={activeGuest.rsvp}
-            // onChange={(v) => onChange("rsvp", v, activeGuestIndex!)}
-          />
-
+    
           {/* Save button */}
           <div className="flex justify-end mt-10">
             <Button variant="outline" onClick={handleSave}>
@@ -138,7 +138,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
       {/* ---- Show Preview ---- */}
       {showPreview && (
         <div className="p-4 space-y-5">
-          {formData.guestList?.map((guest: any, index: number) => (
+          {formData.guestList?.map((guest: Guest, index: number) => (
             <div key={index} className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary">
               <div className="flex items-center gap-4">
                 <p className="bg-accent p-5 rounded-2xl">

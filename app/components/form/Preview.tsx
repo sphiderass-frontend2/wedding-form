@@ -2,9 +2,17 @@
 
 import Image from "next/image";
 import { Calendar, Clock, Mesaging, Group } from "@/public/assets";
+import { FormData } from "@/app/store/useWeddingStore";
 
 interface Props {
-  formData: any;
+  formData: FormData;
+}
+
+interface Guest {
+  fullName: string;
+  guestTitle: string;
+  phoneNumber: string;
+  emailAddress: string;
 }
 
 export default function Preview({ formData }: Props) {
@@ -79,7 +87,7 @@ export default function Preview({ formData }: Props) {
       <div className="bg-tab-primary p-5 rounded-2xl">
         <h2 className="text-xl font-semibold text-accent mb-2">Guest List</h2>
         {formData.guestList?.length > 0 ? (
-          formData.guestList.map((guest: any, index: number) => (
+          formData.guestList.map((guest: Guest, index: number) => (
             <div key={index} className="p-4 rounded-2xl bg-tab-secondary flex justify-between items-center text-text-primary mt-3">
             <div className="flex items-center gap-4">
               <p className="bg-accent p-5 rounded-2xl">

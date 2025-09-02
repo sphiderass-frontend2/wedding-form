@@ -18,7 +18,6 @@ const SigninForm = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({
     email: "",
     password: "",

@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState,} from "react";
 // import { MenuIcon, ChevronDown } from "lucide-react";
 import { SMS, Notification, Location, Search, Hamburger, HamburgerLight } from "@/public/assets";
 import Avatar from '@/public/assets/images/Avatar.png'
 import Image from "next/image";
 import { useTheme } from "../../lib/theme-provider";
 import Link from "next/link";
-import { ThemeToggle } from "../../components/ui/theme-toggle";
 import { Logo } from "@/public/assets";
 import { useRouter } from "next/navigation";
 import { Home, OrganizationIcon, Wallet, Support, EventIcon } from "@/public/assets";
@@ -48,7 +47,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { theme } = useTheme();
   const router = useRouter()

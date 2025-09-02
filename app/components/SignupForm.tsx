@@ -30,7 +30,7 @@ const SignupForm = () => {
     setError("");
 
     try {
-      const data = await register({
+     await register({
         username,
         email,
         password,
@@ -39,8 +39,12 @@ const SignupForm = () => {
       // Assuming the token is saved inside your useAuth hook
       // You can redirect to /verify or dashboard after registration
       route.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Failed to register");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to register");
+      }
     }
   };
 

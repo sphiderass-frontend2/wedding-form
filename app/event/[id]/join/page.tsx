@@ -15,7 +15,7 @@ import ResponseModal from '@/app/components/ResponseModal';
 const EventDetail = () => {
   const { getEvent, inviteIndvidually }   = useWedding();
   const [openForm, setOpenForm] = useState(false)
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     guestTitle: "",

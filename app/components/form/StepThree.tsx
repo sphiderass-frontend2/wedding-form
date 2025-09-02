@@ -3,13 +3,14 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Upload } from "@/public/assets";
+import { FormData } from "@/app/store/useWeddingStore";
 
 interface Props {
-  formData: any;
+  formData: FormData;
   onChange: (field: string, value: File | string) => void;
 }
 
-export default function Step3({ formData, onChange }: Props) {
+export default function Step3({ onChange }: Props) {
   const [state, setState] = useState<{
     isDragging: boolean;
     invitationCard: File | null;

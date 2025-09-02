@@ -96,7 +96,7 @@ export const useAuth = () => {
     clearToken();
   }, [clearToken]);
 
-  const sentOtp = useCallback(async (email: string): Promise<any> => {
+  const sendOtp = useCallback(async (email: string): Promise<any> => {
     const response = await fetch(`${api}/auth/verify-email`, {
       method: "POST",
       headers: {
@@ -113,5 +113,5 @@ export const useAuth = () => {
     return data;
   }, []);
 
-  return { login, register, logout, error, pending, dismissError };
+  return { login, register, logout, error, pending, dismissError, sendOtp };
 };

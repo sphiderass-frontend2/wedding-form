@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Card, CardContent } from '../../components/ui/card';
-import { CalendarDays, MapPin, Ticket, Eye, Trash2, Pencil } from 'lucide-react';
+import { Eye, Trash2, Pencil } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 
 interface UpcomingEventCardProps {

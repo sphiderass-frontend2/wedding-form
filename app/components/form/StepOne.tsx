@@ -4,9 +4,10 @@
 import InputField from "../InputField";
 import CategoryDropdown from "../CategoryDropdown";
 import { Button } from "../ui/button";
+import { FormData } from "@/app/store/useWeddingStore";
 
 interface Props {
-  formData: any;
+  formData: FormData;
   onChange: (field: string, value: string) => void;
 }
 
@@ -55,7 +56,7 @@ export default function Step1({ formData, onChange }: Props) {
       <InputField
           label="Number of Attendees"
           placeholder="Enter Number of Attendees"
-          value={formData.numberOfAttendees}
+          value={formData.numberOfAttendees.toString()}
           onChange={(v) => onChange("numberOfAttendees", v)}
         />
 

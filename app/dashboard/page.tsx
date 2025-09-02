@@ -5,7 +5,6 @@ import VendorPic from "@/public/assets/images/bgVendor.png";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
 import ResponseModal from "../components/ResponseModal";
-import { useRouter } from "next/navigation";
 import Step1 from "../components/form/StepOne";
 import Step2 from "../components/form/StepTwo";
 import Step3 from "../components/form/StepThree";
@@ -45,10 +44,9 @@ export const LoadingModal = () => (
 );
 
 const SponsorForm = ({ onBack }: { onBack: () => void }) => {
-    const router = useRouter()
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const { formData, updateField, addGuest } = useWeddingStore();
+  const { formData, addGuest } = useWeddingStore();
   const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
   const [eventLink, setEventLink] = useState('');
   const [loading, setLoading] = useState(false);
@@ -94,7 +92,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     const createEvent = async () => {
       setLoading(true);
       try {
-        let updatedDetails = { ...details };
+        const updatedDetails = { ...details };
     
         if (updatedDetails.invitationCard instanceof File) {
           const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
