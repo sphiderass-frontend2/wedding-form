@@ -102,6 +102,50 @@ export const useWedding = () => {
     [token]
   );
 
-  return { uploadFile, createEvent, uploadPlaces, getEvent };
+  const inviteIndvidually = useCallback(
+    async ( eventId: string, guestData: any,): Promise<any> => {
+      const response = await fetch(`${api}rsvp/events/${eventId}/request`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(guestData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to invite guest");
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+  const invitationDecision = useCallback(
+    async ( rsvpId: string, responseStatus: string,): Promise<any> => {
+      const response = await fetch(`${api}rsvp/${rsvpId}/respond`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ response: responseStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to respond to invitation");
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+
+
+  return { uploadFile, createEvent, uploadPlaces, getEvent, inviteIndvidually, invitationDecision };
 };
 

@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import VendorPic from "@/public/assets/images/bgVendor.png";
 import Image from "next/image";
 import { Button } from "../components/ui/button";
-import { Upload, Building, InstagramOutline } from "@/public/assets";
-import Resturant from '@/public/assets/images/resturant.png'
 import ResponseModal from "../components/ResponseModal";
 import { useRouter } from "next/navigation";
 import Step1 from "../components/form/StepOne";
@@ -128,7 +126,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         const response = await createEventApi(updatedDetails);
     
         console.log("Event created successfully:", response._id);
-        setEventLink(`https://weddingapp.vercel.app/event/${response._id}`);
+        setEventLink(`https://richlist.vercel.app/event/${response._id}/join`);
         localStorage.setItem("_id", response._id);
         setModal(true);
 
@@ -235,7 +233,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </section>
       {modal && (
         <ResponseModal
-          message="Copy Event Link"
+          secmessage="Copy Event Link"
           buttonText="Go to Events Page"
           title="Event Created Successfully!"
           eventLink={eventLink}
