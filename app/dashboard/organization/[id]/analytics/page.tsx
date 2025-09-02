@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Corona from "@/public/assets/images/corona.png";
 
 import { useRouter } from "next/navigation";
@@ -21,31 +21,33 @@ import EngagementGraph from "../../component/EngagementGraph";
 import { MoreVerticalIcon } from "lucide-react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { Button } from "@/app/components/ui/button";
+import { useWedding } from "@/app/hooks/useWedding";
 
-const Info = [
+// This will be populated with real data from the API
+const getInfoCards = (statistics: any) => [
   {
     id: 1,
     icon: Receipt,
     name: "Invitation Cards",
-    no: "100",
+    no: statistics?.totalInvitations?.toString() || "0",
     secondIcon: Arrowup,
-    percent: "10%",
+    percent: statistics?.changes?.invitationChange || "0%",
   },
   {
     id: 2,
     icon: VR,
     name: "Invitation Accepted",
-    no: "90",
+    no: statistics?.invitationsAccepted?.toString() || "0",
     secondIcon: Arrowup,
-    percent: "10%",
+    percent: statistics?.changes?.acceptanceChange || "0%",
   },
   {
     id: 3,
     icon: Sponsor,
     name: "Invitation Declined",
-    no: "4",
+    no: statistics?.invitationsDeclined?.toString() || "0",
     secondIcon: ArrowDown,
-    percent: "2%",
+    percent: statistics?.changes?.declineChange || "0%",
   },
 ];
 
@@ -86,11 +88,12 @@ const sampleData = [
 
 function Analytics() {
   const router = useRouter();
+  const { getEventDashboard, getEventRSVPs, updateRSVPStatus } = useWedding();
   const [activeTab, setActiveTab] = useState<
     "attendees" | "vendors" | "refunds"
   >("attendees");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const itemsPerPage = 20; // Updated to match API limit
   const [modals, setModals] = useState({
     code: false,
     event: false,
@@ -102,6 +105,80 @@ function Analytics() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [scanned, setScanned] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
+
+  // New state for API data
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // RSVP data state
+  const [rsvpData, setRsvpData] = useState<any>(null);
+  const [rsvpLoading, setRsvpLoading] = useState(false);
+  const [rsvpError, setRsvpError] = useState<string | null>(null);
+
+  // Function to fetch RSVP data
+  const fetchRSVPData = async (
+    eventId: string,
+    status?: string,
+    page: number = 1
+  ) => {
+    try {
+      setRsvpLoading(true);
+      setRsvpError(null);
+
+      console.log(
+        "Fetching RSVP data for event ID:",
+        eventId,
+        "status:",
+        status,
+        "page:",
+        page
+      );
+      const data = await getEventRSVPs(eventId, status, page, itemsPerPage);
+      console.log("RSVP data received:", data);
+
+      setRsvpData(data);
+    } catch (err: any) {
+      console.error("Error fetching RSVP data:", err);
+      setRsvpError(err.message || "Failed to load RSVP data");
+    } finally {
+      setRsvpLoading(false);
+    }
+  };
+
+  // Fetch dashboard data on component mount
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get event ID from localStorage or use test ID
+        const eventId =
+          localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+
+        if (!eventId) {
+          throw new Error("No event ID found. Please create an event first.");
+        }
+
+        console.log("Fetching dashboard data for event ID:", eventId);
+        const data = await getEventDashboard(eventId);
+        console.log("Dashboard data received:", data);
+
+        setDashboardData(data);
+
+        // Fetch initial RSVP data (all RSVPs)
+        await fetchRSVPData(eventId, undefined, 1);
+      } catch (err: any) {
+        console.error("Error fetching dashboard data:", err);
+        setError(err.message || "Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [getEventDashboard, getEventRSVPs]);
 
   const startScanner = async () => {
     setScanning(true);
@@ -130,117 +207,69 @@ function Analytics() {
     }
   };
 
-  const attendeesData: Attendee[] = [
-    {
-      username: "Chris Brown",
-      prize: "chrisbrown@email.com",
-      date: "2023-10-02, 11:30 AM",
-      ticket: "Accept",
-      status: "Decline",
-      refund: true,
-    },
-    {
-      username: "Mark Wilson",
-      prize: "markwilson@email.com",
-      date: "2023-10-03, 09:45 AM",
-      ticket: "Accept",
-      status: "Decline",
-      refund: false,
-    },
-    {
-      username: "Esther Jackson",
-      prize: "estherj@email.com",
-      date: "2023-10-03, 01:15 PM",
-      ticket: "Accept",
-      status: "Decline",
-      refund: true,
-    },
-    {
-      username: "Ping Lee",
-      prize: "pinglee@email.com",
-      date: "2023-10-03, 04:00 PM",
-      ticket: "Accept",
-      status: "Decline",
-      refund: true,
-    },
-    {
-      username: "Sarah Johnson",
-      prize: "sarahj@email.com",
-      date: "2023-10-04, 10:00 AM",
-      ticket: "Accept",
-      status: "Decline",
-      refund: false,
-    },
-  ];
-
-  const vendorsData: Vendor[] = [
-    {
-      username: "Charles Chiwendu",
-      amount: "₦100,000,000",
-      category: "Sponsor",
-      brand: "CocaCola NG",
-      email: "cocacolang@gmail.com",
-      date: "2025-10-21, 2:00 PM",
-    },
-    {
-      username: "Collins Grey",
-      amount: "₦100,000",
-      category: "Vendor",
-      brand: "KK Chops",
-      email: "kkfoods@gmail.com",
-      date: "2025-10-21, 2:00 PM",
-    },
-    {
-      username: "David Ojo",
-      amount: "₦800,000",
-      category: "Sponsor",
-      brand: "MTN",
-      email: "mtnng@gmail.com",
-      date: "2025-10-21, 2:00 PM",
-    },
-    {
-      username: "Chelsea Green",
-      amount: "₦55,000",
-      category: "Vendor",
-      brand: "Chops n Grills",
-      email: "-",
-      date: "2025-10-21, 2:00 PM",
-    },
-    {
-      username: "Adesewa Susan",
-      amount: "₦80,000",
-      category: "Vendor",
-      brand: "Sewa Foods",
-      email: "adesewafood@gmail.com",
-      date: "2025-10-21, 2:00 PM",
-    },
-  ];
-
-  const data = activeTab === "attendees" ? attendeesData : vendorsData;
-  const totalItems =
-    activeTab === "attendees"
-      ? attendeesData.length
-      : activeTab === "refunds"
-      ? attendeesData.filter((item) => item.refund === true).length
-      : vendorsData.length;
-
-  const refundTotal = attendeesData.filter(
-    (item) => item.refund === true
-  ).length;
-
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData =
-    activeTab === "attendees"
-      ? attendeesData.slice(startIndex, startIndex + itemsPerPage)
-      : activeTab === "refunds"
-      ? attendeesData
-          .filter((item) => item.refund === true) // only refunds
-          .slice(startIndex, startIndex + itemsPerPage)
-      : vendorsData.slice(startIndex, startIndex + itemsPerPage);
+  // Get data from API response
+  const rsvpList = rsvpData?.data || [];
+  const pagination = rsvpData?.pagination || {
+    totalPages: 0,
+    currentPage: 1,
+    totalCount: 0,
+  };
+  const totalPages = pagination.totalPages;
+  const totalItems = pagination.totalCount;
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      // Fetch new page data
+      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+      const status =
+        activeTab === "attendees"
+          ? undefined
+          : activeTab === "vendors"
+          ? "accepted"
+          : "declined";
+      fetchRSVPData(eventId, status, page);
+    }
+  };
+
+  const handleTabChange = (tab: "attendees" | "vendors" | "refunds") => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+
+    const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+    const status =
+      tab === "attendees"
+        ? undefined
+        : tab === "vendors"
+        ? "accepted"
+        : "declined";
+
+    fetchRSVPData(eventId, status, 1);
+  };
+
+  const handleRSVPStatusUpdate = async (
+    rsvpId: string,
+    status: "accepted" | "declined"
+  ) => {
+    try {
+      await updateRSVPStatus(rsvpId, status);
+
+      // Refresh the current tab data
+      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+      const currentStatus =
+        activeTab === "attendees"
+          ? undefined
+          : activeTab === "vendors"
+          ? "accepted"
+          : "declined";
+
+      await fetchRSVPData(eventId, currentStatus, currentPage);
+
+      // Also refresh dashboard data to update statistics
+      const dashboardData = await getEventDashboard(eventId);
+      setDashboardData(dashboardData);
+    } catch (err: any) {
+      console.error("Error updating RSVP status:", err);
+      setRsvpError(err.message || "Failed to update RSVP status");
     }
   };
 
@@ -266,6 +295,43 @@ function Analytics() {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-accent mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="bg-red-50 border border-red-200 rounded-md p-6 max-w-md">
+            <h3 className="text-lg font-medium text-red-800 mb-2">
+              Error Loading Dashboard
+            </h3>
+            <p className="text-red-700 mb-4">{error}</p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 text-white"
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Get the info cards with real data
+  const infoCards = getInfoCards(dashboardData?.statistics);
+
   return (
     <>
       <div
@@ -286,7 +352,7 @@ function Analytics() {
           <div className="space-y-3 text-text-primary">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <h1 className="font-bold text-2xl sm:text-3xl">
-                Shola & Yusuf's Wedding
+                {dashboardData?.event?.brideName || "Event Dashboard"}
               </h1>
 
               <div>
@@ -314,18 +380,22 @@ function Analytics() {
             </div>
 
             <p className="text-gray font-normal text-sm sm:text-base">
-              Event Date: <span className="text-black">October 20th</span>
+              Event Date:{" "}
+              <span className="text-black">
+                {dashboardData?.event?.eventDate
+                  ? new Date(dashboardData.event.eventDate).toLocaleDateString()
+                  : "Date not available"}
+              </span>
             </p>
             <p className="text-gray mt-5 sm:mt-7 text-base sm:text-xl">
-              A beautiful celebration of love, joy, and unity. Surrounded by
-              family and friends, this special day will be filled with warmth,
-              elegance, and heartfelt moments that will be cherished forever.
+              {dashboardData?.event?.description ||
+                "Event description not available"}
             </p>
           </div>
 
           {/* Info Cards */}
           <div className="flex flex-wrap gap-5 mt-10">
-            {Info.map((ana, index) => (
+            {infoCards.map((ana: any, index: number) => (
               <div key={index} className="bg-tab-secondary rounded-2xl p-6">
                 <div className="flex flex-col items-start gap-3">
                   <p className="bg-[#4D67FE1A] p-5 rounded-2xl">
@@ -349,17 +419,16 @@ function Analytics() {
 
           {/* Graph */}
           <div className="p-6 text-text-primary">
-            <EngagementGraph data={sampleData} />
+            <EngagementGraph
+              data={dashboardData?.engagementData || sampleData}
+            />
           </div>
 
           {/* Tabs & Filter */}
           <section className="bg-tab-secondary p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-10">
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => {
-                  setActiveTab("attendees");
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleTabChange("attendees")}
                 className={`px-4 py-2 text-sm sm:text-xl rounded-t-lg cursor-pointer ${
                   activeTab === "attendees"
                     ? "bg-[#4D67FE33] text-accent"
@@ -367,12 +436,14 @@ function Analytics() {
                 }`}
               >
                 RSVP List
+                {rsvpData?.summary?.statusBreakdown?.pending && (
+                  <span className="bg-blue-500 ml-1 text-white font-bold rounded-full px-2 py-0 text-xs">
+                    {rsvpData.summary.statusBreakdown.pending}
+                  </span>
+                )}
               </button>
               <button
-                onClick={() => {
-                  setActiveTab("vendors");
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleTabChange("vendors")}
                 className={`px-4 py-2 text-sm sm:text-xl rounded-t-lg cursor-pointer ${
                   activeTab === "vendors"
                     ? "bg-[#4D67FE33] text-accent"
@@ -380,22 +451,26 @@ function Analytics() {
                 }`}
               >
                 Accepted Invitation
+                {rsvpData?.summary?.statusBreakdown?.confirmed && (
+                  <span className="bg-green-500 ml-1 text-white font-bold rounded-full px-2 py-0 text-xs">
+                    {rsvpData.summary.statusBreakdown.confirmed}
+                  </span>
+                )}
               </button>
               <button
-                onClick={() => {
-                  setActiveTab("refunds");
-                  setCurrentPage(1);
-                }}
+                onClick={() => handleTabChange("refunds")}
                 className={`px-4 py-2 text-sm sm:text-xl rounded-t-lg cursor-pointer ${
                   activeTab === "refunds"
                     ? "bg-[#4D67FE33] text-accent"
                     : "text-gray"
                 }`}
               >
-                Declined Invitation{" "}
-                <span className="bg-error ml-1 text-white font-bold rounded-full px-2 py-0 text-xs">
-                  {refundTotal}
-                </span>
+                Declined Invitation
+                {rsvpData?.summary?.statusBreakdown?.declined && (
+                  <span className="bg-red-500 ml-1 text-white font-bold rounded-full px-2 py-0 text-xs">
+                    {rsvpData.summary.statusBreakdown.declined}
+                  </span>
+                )}
               </button>
             </div>
 
@@ -413,138 +488,144 @@ function Analytics() {
           <div className="mt-5 max-w-sm md:max-w-full  overflow-x-auto no-scrollbar rounded-lg">
             <table className="min-w-[1000px] md:min-w-full border-separate border-spacing-y-2  p-5 rounded-md text-text-primary text-sm sm:text-base">
               <thead className="text-left text-gray">
-                {activeTab === "attendees" || activeTab === "refunds" ? (
-                  <tr>
-                    <th className="font-normal">Full Name</th>
-                    <th className="font-normal">Email</th>
-                    <th className="font-normal">Date & Time</th>
+                <tr>
+                  <th className="font-normal">Full Name</th>
+                  <th className="font-normal">Email</th>
+                  <th className="font-normal">Phone</th>
+                  {activeTab === "attendees" && (
                     <th className="font-normal">Action</th>
-                  </tr>
-                ) : (
-                  <tr>
-                    <th className="font-normal">Username</th>
-                    <th className="font-normal">Amount</th>
-                    <th className="font-normal">Category</th>
-                    <th className="font-normal">Brand</th>
-                    <th className="font-normal">Email</th>
-                    <th className="font-normal">Date & Time</th>
-                  </tr>
-                )}
+                  )}
+                  {(activeTab === "vendors" || activeTab === "refunds") && (
+                    <th className="font-normal">Status</th>
+                  )}
+                </tr>
               </thead>
 
               <tbody className="cursor-pointer">
-                {activeTab === "attendees" || activeTab === "refunds"
-                  ? paginatedData.map((item, idx) => (
-                      <tr
-                        key={idx}
-                        className="border-y border-gray rounded-lg relative"
-                      >
-                        <td
-                          className="py-3"
-                          onClick={() => setModals({ ...modals, event: true })}
-                        >
-                          {item.username}{" "}
-                          {/* {item.refund === true && (
-                            <span className="bg-error w-2 h-2 ml-5 rounded-full px-3 py-0"></span>
-                          )} */}
-                        </td>
-                        <td>{item.prize}</td>
-                        <td>{item.date}</td>
-                        <td>
-                          <div className="flex gap-2">
-                            <Button className="bg-[#009311] text-white ">
-                              Accept
-                            </Button>
-                            <button className="text-red-500 cursor-pointer">
-                              Decline
-                            </button>
+                {rsvpLoading ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent mr-2"></div>
+                        Loading RSVPs...
+                      </div>
+                    </td>
+                  </tr>
+                ) : rsvpError ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-red-500">
+                      Error loading RSVPs: {rsvpError}
+                    </td>
+                  </tr>
+                ) : rsvpList.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-gray-500">
+                      No RSVPs found
+                    </td>
+                  </tr>
+                ) : (
+                  rsvpList.map((rsvp: any, idx: number) => (
+                    <tr
+                      key={rsvp.id}
+                      className="border-y border-gray rounded-lg relative"
+                    >
+                      <td className="py-3">
+                        <div>
+                          <div className="font-medium">{rsvp.fullName}</div>
+                          <div className="text-sm text-gray-500">
+                            {rsvp.guestTitle}
                           </div>
-                        </td>
-{/* 
-                        <td
-                          onClick={() =>
-                            setActiveDropdownRow(
-                              activeDropdownRow === idx ? null : idx
-                            )
-                          }
-                          className="relative"
-                        >
-                          <MoreVerticalIcon />
-                        </td> */}
-
-                        {activeDropdownRow === idx && (
-                          <div className="bg-tab-primary rounded-2xl absolute right-12 mt-2 p-3 z-50 shadow-lg">
-                            <button
-                              onClick={() =>
-                                setModals({ ...modals, event: true })
-                              }
-                              className="cursor-pointer w-full text-left"
+                        </div>
+                      </td>
+                      <td>{rsvp.emailAddress}</td>
+                      <td>{rsvp.phoneNumber}</td>
+                      <td>
+                        {activeTab === "attendees" &&
+                          rsvp.rsvpStatus === "pending" && (
+                            <div className="flex gap-2">
+                              <Button
+                                className="bg-[#009311] text-white text-sm"
+                                onClick={() =>
+                                  handleRSVPStatusUpdate(rsvp.id, "accepted")
+                                }
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                className="text-red-500 font-semibold bg-transparent"
+                                onClick={() =>
+                                  handleRSVPStatusUpdate(rsvp.id, "declined")
+                                }
+                              >
+                                Decline
+                              </Button>
+                            </div>
+                          )}
+                        {activeTab === "attendees" &&
+                          rsvp.rsvpStatus !== "pending" && (
+                            <span
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                rsvp.rsvpStatus === "accepted"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
                             >
-                              View details
-                            </button>
-                          </div>
-                        )}
-                      </tr>
-                    ))
-                  : paginatedData.map((item, idx) => (
-                      <tr
-                        key={idx}
-                        className="border-y border-gray rounded-lg relative"
-                      >
-                        <td
-                          className="py-3"
-                          onClick={() => setModals({ ...modals, event: true })}
-                        >
-                          {item.username}
-                        </td>
-                        <td>{item.amount}</td>
-                        <td>
+                              {rsvp.rsvpStatus}
+                            </span>
+                          )}
+                        {(activeTab === "vendors" ||
+                          activeTab === "refunds") && (
                           <span
-                            className={`px-3 py-1 rounded-xl text-sm ${getCategoryClasses(
-                              item.category
-                            )}`}
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              rsvp.rsvpStatus === "accepted"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
                           >
-                            {item.category}
+                            {rsvp.rsvpStatus}
                           </span>
-                        </td>
-                        <td>{item.brand}</td>
-                        <td>{item.email}</td>
-                        <td>{item.date}</td>
-                      </tr>
-                    ))}
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
 
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 text-gray-500 disabled:opacity-50"
-            >
-              ← Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
               <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-1 rounded ${
-                  page === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-600"
-                }`}
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={!pagination.hasPreviousPage}
+                className="px-3 py-1 text-gray-500 disabled:opacity-50"
               >
-                {page}
+                ← Previous
               </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 text-gray-500 disabled:opacity-50"
-            >
-              Next →
-            </button>
-          </div>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 rounded ${
+                      page === pagination.currentPage
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+              <button
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={!pagination.hasNextPage}
+                className="px-3 py-1 text-gray-500 disabled:opacity-50"
+              >
+                Next →
+              </button>
+            </div>
+          )}
 
           {modals.code && (
             <ScanCode onClose={() => setModals({ ...modals, code: false })} />

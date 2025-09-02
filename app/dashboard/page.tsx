@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { useState } from "react";
 import VendorPic from "@/public/assets/images/bgVendor.png";
@@ -25,9 +25,9 @@ interface FormData {
   description: string;
   category: string;
   numberOfAttendees: number;
-  date: string;
-  startTime: string; // "HH:mm"
-  endTime: string; // "HH:mm"
+  date: string;               
+  startTime: string;           // "HH:mm"
+  endTime: string;             // "HH:mm"
   venue: string;
   address: string;
   guestList: Guest[];
@@ -45,100 +45,72 @@ export const LoadingModal = () => (
 );
 
 const SponsorForm = ({ onBack }: { onBack: () => void }) => {
-  const router = useRouter();
+    const router = useRouter()
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, updateField, addGuest } = useWeddingStore();
-  const {
-    createEvent: createEventApi,
-    uploadFile,
-    uploadPlaces,
-  } = useWedding();
-  const [eventLink, setEventLink] = useState("");
+  const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
+  const [eventLink, setEventLink] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const [modal, setModal] = useState(false);
-  const handleInputChange = <K extends keyof FormData>(
-    field: K,
-    value: FormData[K],
-    guestIndex?: number
-  ) => {
-    if (guestIndex !== undefined) {
-      useWeddingStore
-        .getState()
-        .updateGuest(guestIndex, { [field as string]: value } as any);
-    } else {
-      // Update top-level field
-      useWeddingStore.getState().updateField(field, value);
-    }
-  };
-
-  const nextStep = () => {
-    let isValid = false;
-
-    if (step === 1 && formData.name?.trim() && formData.venue?.trim())
-      isValid = true;
-    if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
-    if (step === 3 && formData.name?.trim()) isValid = true;
-
-    if (isValid) {
-      if (!completedSteps.includes(step)) {
-        setCompletedSteps((prev) => [...prev, step]);
+  const [modal, setModal] = useState(false)
+    const handleInputChange = <K extends keyof FormData>(
+      field: K,
+      value: FormData[K],
+      guestIndex?: number
+    ) => {
+      if (guestIndex !== undefined) {
+        useWeddingStore
+          .getState()
+          .updateGuest(guestIndex, { [field as string]: value } as any);
+      } else {
+        // Update top-level field
+        useWeddingStore.getState().updateField(field, value);
       }
-      if (step < 4) setStep(step + 1);
-    } else {
-      if (step === 1) {
-        alert(
-          "Please complete the event name and venue fields before proceeding."
-        );
+    };
+    
+    
+    
+    const nextStep = () => {
+      let isValid = false;
+    
+      if (step === 1 && formData.name?.trim()) isValid = true;
+      if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
+      if (step === 3 && formData.name?.trim()) isValid = true; 
+    
+      if (isValid) {
+        if (!completedSteps.includes(step)) {
+          setCompletedSteps((prev) => [...prev, step]);
+        }
+        if (step < 4) setStep(step + 1);
       } else {
         alert("Please complete this step before proceeding.");
       }
-    }
-  };
+    };
 
-  const details = useWeddingStore((state) => state.formData);
+    const details = useWeddingStore((state) => state.formData);
 
-  const createEvent = async () => {
-    setLoading(true);
-    setError(""); // Clear previous errors
+    
+    const createEvent = async () => {
+      setLoading(true);
+      try {
+        let updatedDetails = { ...details };
+    
+        if (updatedDetails.invitationCard instanceof File) {
+          const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
+          console.log("Uploaded URL:", uploadedUrl);
+    
+          updatedDetails.invitationCard = uploadedUrl;
+        }
+    
+        if (typeof updatedDetails.numberOfAttendees === "string") {
+          updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
+        }
 
-    try {
-      // Validate required fields before processing
-      if (!details.venue?.trim()) {
-        throw new Error("Venue is required. Please fill in the venue field.");
-      }
-      if (!details.name?.trim()) {
-        throw new Error("Event name is required.");
-      }
-      if (!details.description?.trim()) {
-        throw new Error("Event description is required.");
-      }
-      if (!details.date?.trim()) {
-        throw new Error("Event date is required.");
-      }
-
-      let updatedDetails = { ...details };
-
-      if (updatedDetails.invitationCard instanceof File) {
-        const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
-        console.log("Uploaded URL:", uploadedUrl);
-
-        updatedDetails.invitationCard = uploadedUrl;
-      }
-
-      if (typeof updatedDetails.numberOfAttendees === "string") {
-        updatedDetails.numberOfAttendees = Number(
-          updatedDetails.numberOfAttendees
-        );
-      }
-
-      if (updatedDetails.venue) {
-        try {
+        if (updatedDetails.venue) {
           const placeId = await uploadPlaces(updatedDetails.venue);
           console.log("Uploaded Place ID:", placeId);
-
+        
           if (placeId) {
             updatedDetails.venue = placeId; 
           }
@@ -167,48 +139,9 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
   return (
     <>
+
+
       {loading && <LoadingModal />}
-
-      {/* Error Display */}
-      {error && (
-        <div className="fixed top-4 right-4 z-50 bg-red-50 border border-red-200 rounded-md p-4 max-w-md">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-red-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">
-                Error Creating Event
-              </h3>
-              <div className="mt-2 text-sm text-red-700">
-                <p>{error}</p>
-              </div>
-              <div className="mt-4">
-                <div className="-mx-2 -my-1.5 flex">
-                  <button
-                    type="button"
-                    onClick={() => setError("")}
-                    className="bg-red-50 px-2 py-1.5 rounded-md text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
-                  >
-                    Dismiss
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Top Section with Background */}
       <div className="relative w-full h-[40vh] overflow-hidden">
         <Image
@@ -222,10 +155,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
 
         {/* Back Button */}
         <div className="absolute top-4 left-4 z-20">
-          <Button
-            onClick={onBack}
-            className="bg-white text-black shadow hidden md:block"
-          >
+          <Button onClick={onBack} className="bg-white text-black shadow hidden md:block">
             ← Back
           </Button>
         </div>
@@ -263,50 +193,43 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <section className="px-5 md:px-0">
-        <div className="  mt-5">
-          {step === 1 && (
-            <Step1
-              formData={formData}
-              onChange={(field, value) =>
-                handleInputChange(field as keyof FormData, value)
-              }
-            />
-          )}
-          {step === 2 && (
-            <Step2
-              formData={formData}
-              onChange={
-                handleInputChange as (
-                  field: string,
-                  value: string,
-                  guestIndex?: number
-                ) => void
-              }
-              setFormData={addGuest}
-            />
-          )}
-          {step === 3 && (
-            <Step3
-              formData={formData}
-              onChange={(field, value) =>
-                handleInputChange(field as keyof FormData, value)
-              }
-            />
-          )}
-          {step === 4 && <Preview formData={formData} />}
 
-          <div className="flex justify-end mt-10">
-            {step < 4 ? (
-              <Button onClick={nextStep} className="bg-accent text-white">
-                {step < 3 ? "Next" : "Save & Preview"}
-              </Button>
-            ) : (
-              <Button onClick={createEvent} className="bg-accent text-white">
-                Save
-              </Button>
-            )}
-          </div>
-        </div>
+      <div className="  mt-5">
+      {step === 1 && (
+        <Step1
+          formData={formData}
+          onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
+        />
+      )}
+{step === 2 && (
+  <Step2
+    formData={formData}
+    onChange={handleInputChange as (field: string, value: string, guestIndex?: number) => void}
+    setFormData={addGuest}
+  />
+)}
+{step === 3 && (
+  <Step3
+    formData={formData}
+    onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
+  />
+)}
+{step === 4 && <Preview formData={formData} />}
+
+
+      <div className="flex justify-end mt-10">
+      {step < 4 ? (
+  <Button onClick={nextStep} className="bg-accent text-white">
+    {step < 3 ? "Next" : "Save & Preview"}
+  </Button>
+) : (
+  <Button onClick={createEvent} className="bg-accent text-white">
+    Save
+  </Button>
+)}
+
+      </div>
+      </div>
       </section>
       {modal && (
         <ResponseModal
@@ -317,6 +240,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           onClose={() => (window.location.href = `${eventLink}`)}
         />
       )}
+     
     </>
   );
 };

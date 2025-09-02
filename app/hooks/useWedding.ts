@@ -121,7 +121,7 @@ export const useWedding = () => {
   );
 
   const inviteIndvidually = useCallback(
-    async ( eventId: string, guestData: any,): Promise<any> => {
+    async (eventId: string, guestData: any): Promise<any> => {
       const response = await fetch(`${api}rsvp/events/${eventId}/request`, {
         method: "POST",
         headers: {
@@ -142,7 +142,7 @@ export const useWedding = () => {
   );
 
   const invitationDecision = useCallback(
-    async ( rsvpId: string, responseStatus: string,): Promise<any> => {
+    async (rsvpId: string, responseStatus: string): Promise<any> => {
       const response = await fetch(`${api}rsvp/${rsvpId}/respond`, {
         method: "PUT",
         headers: {
@@ -162,7 +162,135 @@ export const useWedding = () => {
     [token]
   );
 
+  const getEventDashboard = useCallback(
+    async (eventId: string): Promise<any> => {
+      const apiUrl = api?.endsWith("/") ? api : `${api}/`;
 
+      console.log(
+        "Fetching event dashboard with URL:",
+        `${apiUrl}organisation/events/${eventId}/dashboard`
+      );
 
-  return { uploadFile, createEvent, uploadPlaces, getEvent, inviteIndvidually, invitationDecision };
+      const response = await fetch(
+        `${apiUrl}organisation/events/${eventId}/dashboard`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+
+      console.log("Dashboard response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error("Dashboard error response:", errorData);
+        throw new Error(
+          errorData?.message ||
+            `HTTP ${response.status}: ${response.statusText} - Failed to fetch event dashboard`
+        );
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+  const getEventRSVPs = useCallback(
+    async (
+      eventId: string,
+      status?: string,
+      page: number = 1,
+      limit: number = 20
+    ): Promise<any> => {
+      const apiUrl = api?.endsWith("/") ? api : `${api}/`;
+
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      if (status && status !== "all") {
+        params.append("status", status);
+      }
+
+      const url = `${apiUrl}organisation/events/${eventId}/rsvps?${params.toString()}`;
+
+      console.log("Fetching RSVPs with URL:", url);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      console.log("RSVPs response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error("RSVPs error response:", errorData);
+        throw new Error(
+          errorData?.message ||
+            `HTTP ${response.status}: ${response.statusText} - Failed to fetch RSVPs`
+        );
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+  const updateRSVPStatus = useCallback(
+    async (rsvpId: string, status: "accepted" | "declined"): Promise<any> => {
+      const apiUrl = api?.endsWith("/") ? api : `${api}/`;
+
+      console.log(`Updating RSVP ${rsvpId} status to:`, status);
+
+      const response = await fetch(
+        `${apiUrl}organisation/rsvps/${rsvpId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      console.log("Update RSVP response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error("Update RSVP error response:", errorData);
+        throw new Error(
+          errorData?.message ||
+            `HTTP ${response.status}: ${response.statusText} - Failed to update RSVP status`
+        );
+      }
+
+      const data = await response.json();
+      return data;
+    },
+    [token]
+  );
+
+  return {
+    uploadFile,
+    createEvent,
+    uploadPlaces,
+    getEvent,
+    inviteIndvidually,
+    invitationDecision,
+    getEventDashboard,
+    getEventRSVPs,
+    updateRSVPStatus,
+  };
 };
