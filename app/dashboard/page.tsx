@@ -124,7 +124,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         const response = await createEventApi(updatedDetails);
     
         console.log("Event created successfully:", response._id);
-        setEventLink(`https://richlist.vercel.app/event/${response._id}/join`);
+        setEventLink(`https://richlist-rouge.vercel.app/event/${response._id}/join`);
         localStorage.setItem("_id", response._id);
         setModal(true);
 
