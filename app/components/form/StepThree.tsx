@@ -32,6 +32,8 @@ export default function Step3({ onChange }: Props) {
         invitationCardPreview: previewUrl,
       }));
       onChange("invitationCard", file);
+      onChange("ivPrev", previewUrl);
+
     }
   };
 

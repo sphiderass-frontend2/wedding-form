@@ -34,6 +34,7 @@ interface FormData {
   guestList: Guest[];
   rsvpStatus: "Open" | "Closed";
   invitationCard: string | File | null;
+  ivPrev: string; // Add the missing property
 }
 
 export const LoadingModal = () => (
@@ -48,7 +49,7 @@ export const LoadingModal = () => (
 const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const { formData, addGuest } = useWeddingStore();
+  const { formData, addGuest, removeGuest } = useWeddingStore();
   const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
   const [eventLink, setEventLink] = useState('');
   const [orgLink, setOrgLink] = useState('');
@@ -75,10 +76,40 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     
     const nextStep = () => {
       let isValid = false;
+      let errorMessage = "";
     
-      if (step === 1 && formData.name?.trim()) isValid = true;
-      if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
-      if (step === 3 && formData.name?.trim()) isValid = true; 
+      if (step === 1) {
+        if (formData.name?.trim()) {
+          isValid = true;
+        } else {
+          errorMessage = "Please enter your name.";
+        }
+      }
+    
+      if (step === 2) {
+        if (
+          Array.isArray(formData.guestList) &&
+          formData.guestList.length > 0 &&
+          formData.guestList.every((guest) => guest.fullName?.trim())
+        ) {
+          isValid = true;
+        } else if (!formData.guestList || formData.guestList.length === 0) {
+          errorMessage = "Please add at least one guest.";
+        } else {
+          errorMessage = "Please fill in all guest names.";
+        }
+      }
+    
+      if (step === 3) {
+        if (
+          typeof formData.ivPrev === "string" &&
+          formData.ivPrev.trim()
+        ) {
+          isValid = true;
+        } else {
+          errorMessage = "Please upload an invitation card.";
+        }
+      }
     
       if (isValid) {
         if (!completedSteps.includes(step)) {
@@ -86,9 +117,11 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
         }
         if (step < 4) setStep(step + 1);
       } else {
-        alert("Please complete this step before proceeding.");
+        alert(errorMessage || "Please complete this step before proceeding.");
       }
     };
+    
+    
 
     function prevStep(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
       event.preventDefault();
@@ -104,6 +137,9 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       setLoading(true);
       try {
         const updatedDetails = { ...details };
+
+            // 🚨 remove preview-only fields
+    delete (updatedDetails as any).ivPrev;
     
         if (updatedDetails.invitationCard instanceof File) {
           const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
@@ -225,6 +261,7 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
     formData={formData}
     onChange={handleInputChange as (field: string, value: string, guestIndex?: number) => void}
     setFormData={addGuest}
+    removeGuest={removeGuest}
   />
 )}
 {step === 3 && (

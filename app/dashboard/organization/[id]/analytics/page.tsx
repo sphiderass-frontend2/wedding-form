@@ -88,7 +88,15 @@ const sampleData = [
 
 function Analytics() {
   const router = useRouter();
-  const { getEventDashboard, getEventRSVPs, updateRSVPStatus } = useWedding();
+  const { getEventDashboard, getEventRSVPs, updateRSVPStatus, getEvent } = useWedding();
+  type Event = {
+    invitationCard?: string;
+    brideName?: string;
+    eventDate?: string;
+    description?: string;
+  };
+  
+  const [event, setEvent] = useState<Event | null>(null);
   const [activeTab, setActiveTab] = useState<
     "attendees" | "vendors" | "refunds"
   >("attendees");
@@ -155,22 +163,22 @@ function Analytics() {
         setLoading(true);
         setError(null);
 
-        // Get event ID from localStorage or use test ID
-        const eventId =
-          localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
-
+   
         if (!eventId) {
           throw new Error("No event ID found. Please create an event first.");
         }
 
         console.log("Fetching dashboard data for event ID:");
-        const data = await getEventDashboard(eventId);
+        const data = await getEventDashboard(Array.isArray(eventId) ? eventId[0] : eventId);
         console.log("Dashboard data received:", data);
 
         setDashboardData(data); 
 
+         const eventDetail = await getEvent(Array.isArray(eventId) ? eventId[0] : eventId);
+         setEvent(eventDetail);
+
         // Fetch initial RSVP data (all RSVPs)
-        await fetchRSVPData(eventId, undefined, 1);
+        await fetchRSVPData(Array.isArray(eventId) ? eventId[0] : eventId, undefined, 1);
       } catch (err: any) {
         console.error("Error fetching dashboard data:", err);
         setError(err.message || "Failed to load dashboard data");
@@ -337,7 +345,7 @@ function Analytics() {
     <>
       <div
         className="relative w-full h-[70vh] md:h-[400px] bg-cover bg-center rounded-t-2xl"
-        style={{ backgroundImage: `url(${Corona.src})` }}
+        style={{ backgroundImage: `url(${event?.invitationCard})` }}
       >
         <div className="absolute inset-0 bg-black/50 rounded-t-2xl" />
 

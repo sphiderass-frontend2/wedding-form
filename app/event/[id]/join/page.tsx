@@ -23,6 +23,10 @@ const EventDetail = () => {
     emailAddress: "",
   });
   const [showResponseModal, setShowResponseModal] = useState(false);
+  const [responseMessage, setResponseMessage] = useState<string | null>(null);
+const [responseTitle, setResponseTitle] = useState<string>("");
+const [responseNote, setResponseNote] = useState<string>("");
+
   
   const params = useParams();
    const id = params?.id; 
@@ -50,17 +54,45 @@ const EventDetail = () => {
       };
       
       const handleSave = async () => {
-        
         console.log("Form Data Submitted:", formData);
+      
         try {
           const response = await inviteIndvidually(id as string, formData);
+      
+          // ✅ Success modal
+          setResponseTitle("Request Sent Successfully!");
+          setResponseMessage("You have successfully requested to go to this event.");
+          setResponseNote("Please wait for the host to approve your request.");
           setShowResponseModal(true);
+      
           console.log("Invitation sent successfully:", response);
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error sending invitation:", error);
+      
+          // Normalize backend message
+          const rawMessage =
+            error?.message ||
+            error?.response?.data?.message ||
+            "Failed to send invitation.";
+      
+          let userFriendlyMessage = rawMessage;
+      
+          if (rawMessage.includes("E11000 duplicate key error")) {
+            userFriendlyMessage = "This guest has already been invited to this event.";
+          }
+      
+        
+          setResponseTitle("Error");
+          setResponseMessage(userFriendlyMessage);
+          setResponseNote("");
+          setShowResponseModal(true);
+        } finally {
+          // ✅ Always close form after processing
+          setOpenForm(false);
         }
-        setOpenForm(false); 
-      }
+      };
+      
+      
    
 
       console.log("Invitation Card URL:", event?.invitationCard);
@@ -240,13 +272,13 @@ const EventDetail = () => {
     </section>
 
     {showResponseModal && (
-      <ResponseModal
-        title="Request Sent Successfully!"
-        buttonText="Close"
-        onClose={() => setShowResponseModal(false)}
-        message='You have successfully requested to go to this event. '
-        note='Please wait for the host to approve your request.'
-        />
+    <ResponseModal
+    title={responseTitle}
+    buttonText="Close"
+    onClose={() => setShowResponseModal(false)}
+    message={responseMessage || ""}
+    note={responseNote}
+  />
         )}
     </>
   );

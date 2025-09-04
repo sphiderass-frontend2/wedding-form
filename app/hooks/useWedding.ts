@@ -75,12 +75,14 @@ export const useWedding = () => {
         body: JSON.stringify(eventData),
       });
   
+      // parse once
       const data = await response.json().catch(() => null);
   
       if (!response.ok) {
-        const errorMessage = data?.message || "Error creating event. Please try again.";
-        console.log("Create Event Error Response:", errorMessage);
-        toast.error(errorMessage);
+        const errorMessage =
+          data?.message || "Error creating event. Please try again.";
+        console.error("Create Event Error Response:", data);
+        toast.error(errorMessage); // ✅ will now show "invitationCard is required"
         throw new Error(errorMessage);
       }
   
@@ -89,6 +91,7 @@ export const useWedding = () => {
     },
     [token]
   );
+  
   
 
   const getEvent = useCallback(
@@ -112,7 +115,6 @@ export const useWedding = () => {
   );
 
 
-
   const inviteIndvidually = useCallback(
     async (eventId: string, guestData: any): Promise<any> => {
       const response = await fetch(`${api}rsvp/events/${eventId}/request`, {
@@ -123,16 +125,30 @@ export const useWedding = () => {
         },
         body: JSON.stringify(guestData),
       });
-
+  
+      const data = await response.json().catch(() => ({}));
+  
       if (!response.ok) {
-        throw new Error("Failed to invite guest");
+        console.log("Invite Guest Error Response:", data);
+  
+        throw {
+          status: response.status,
+          message:
+            typeof data.message === "string"
+              ? data.message
+              : Array.isArray(data.message)
+              ? data.message.join(", ")
+              : "Failed to invite guest",
+        };
       }
-
-      const data = await response.json();
+  
       return data;
     },
     [token]
   );
+  
+  
+  
 
   const invitationDecision = useCallback(
     async (rsvpId: string, responseStatus: string): Promise<any> => {
@@ -151,7 +167,7 @@ export const useWedding = () => {
 
       const data = await response.json();
       return data;
-    },
+    }, 
     [token]
   );
 
@@ -241,39 +257,43 @@ export const useWedding = () => {
   );
 
   const updateRSVPStatus = useCallback(
-    async (rsvpId: string, status: "accepted" | "declined"): Promise<any> => {
+    async (rsvpId: string, response: "accepted" | "declined"): Promise<any> => {
       const apiUrl = api?.endsWith("/") ? api : `${api}/`;
-
-      console.log(`Updating RSVP ${rsvpId} status to:`, status);
-
-      const response = await fetch(
-        `${apiUrl}organisation/rsvps/${rsvpId}/${status}`,
+  
+      // Map body response ("accepted"/"declined") to URL ("approve"/"reject")
+      const urlAction = response === "accepted" ? "approve" : "reject";
+  
+      console.log(`Updating RSVP ${rsvpId} → URL: ${urlAction}, Body: ${response}`);
+  
+      const responsed = await fetch(
+        `${apiUrl}organisation/${rsvpId}/${urlAction}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ response }), // stays "accepted"/"declined"
         }
       );
-
-      console.log("Update RSVP response status:", response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+  
+      console.log("Update RSVP response status:", responsed.status);
+  
+      if (!responsed.ok) {
+        const errorData = await responsed.json().catch(() => null);
         console.error("Update RSVP error response:", errorData);
         throw new Error(
           errorData?.message ||
-            `HTTP ${response.status}: ${response.statusText} - Failed to update RSVP status`
+            `HTTP ${responsed.status}: ${responsed.statusText} - Failed to update RSVP status`
         );
       }
-
-      const data = await response.json();
+  
+      const data = await responsed.json();
       return data;
     },
     [token]
   );
+  
 
   return {
     uploadFile,

@@ -44,7 +44,7 @@ export default function Step1({ formData, onChange }: Props) {
 
       <div className="space-y-6 mt-4">
         <InputField
-          label="Name of Event"
+          label="Name of Couples"
           required
           placeholder="Enter event name"
           value={formData.name}

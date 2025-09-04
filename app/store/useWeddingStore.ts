@@ -23,6 +23,7 @@ export interface FormData {
   guestList: Guest[];
   rsvpStatus: "Open" | "Closed";
   invitationCard: string | File | null;
+  ivPrev: string
 }
 
 interface WeddingStore {
@@ -48,6 +49,7 @@ const initialFormData: FormData = {
   guestList: [],
   rsvpStatus: "Open",
   invitationCard: null,
+  ivPrev: ""
 };
 
 export const useWeddingStore = create<WeddingStore>()(
