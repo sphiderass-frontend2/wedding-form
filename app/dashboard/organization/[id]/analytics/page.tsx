@@ -106,7 +106,7 @@ function Analytics() {
   const [scanned, setScanned] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const params = useParams();
-  const id = params.id;
+  const eventId = params.id;
 
   // New state for API data
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -163,11 +163,11 @@ function Analytics() {
           throw new Error("No event ID found. Please create an event first.");
         }
 
-        console.log("Fetching dashboard data for event ID:", eventId);
+        console.log("Fetching dashboard data for event ID:");
         const data = await getEventDashboard(eventId);
         console.log("Dashboard data received:", data);
 
-        setDashboardData(data);
+        setDashboardData(data); 
 
         // Fetch initial RSVP data (all RSVPs)
         await fetchRSVPData(eventId, undefined, 1);

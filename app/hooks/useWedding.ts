@@ -247,7 +247,7 @@ export const useWedding = () => {
       console.log(`Updating RSVP ${rsvpId} status to:`, status);
 
       const response = await fetch(
-        `${apiUrl}organisation/rsvps/${rsvpId}/status`,
+        `${apiUrl}organisation/rsvps/${rsvpId}/${status}`,
         {
           method: "PUT",
           headers: {

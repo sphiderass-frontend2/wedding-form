@@ -58,7 +58,6 @@ export const useAuth = () => {
     },
     [setToken]
   );
-
   const register = useCallback(
     async (userInfo: {
       username: string;
@@ -72,25 +71,28 @@ export const useAuth = () => {
         },
         body: JSON.stringify(userInfo),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
-        // Throw backend error message instead of generic
         throw new Error(
-          data.message ? data.message.join(", ") : "Failed to register"
+          typeof data.message === "string"
+            ? data.message
+            : Array.isArray(data.message)
+            ? data.message.join(", ")
+            : "Failed to register"
         );
       }
-
-      // Save token if backend returns one
+  
       if (data.token) {
         setToken(data.token);
       }
-
+  
       return data;
     },
     [setToken]
   );
+  
 
   const logout = useCallback(() => {
     clearToken();
