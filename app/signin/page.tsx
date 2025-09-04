@@ -1,5 +1,5 @@
 "use client";
-import { Facebook, Google, Logo } from "@/public/assets";
+import { Logo } from "@/public/assets";
 import Image from "next/image";
 import Threads from "../components/Threads";
 import SigninForm from "../components/SigninForm";

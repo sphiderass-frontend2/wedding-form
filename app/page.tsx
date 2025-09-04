@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Facebook, Google, Logo } from "@/public/assets";
+import {  Logo } from "@/public/assets";
 import SignupForm from "./components/SignupForm";
 import Threads from "./components/Threads";
 import { useAuth } from "./hooks/useAuth";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 

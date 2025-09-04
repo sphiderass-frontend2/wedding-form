@@ -56,8 +56,8 @@ export const useWedding = () => {
       }
 
       const data = await response.json();
-      toast.success("Location added successfully!")
-      return data[0]?.place_id ?? null; 
+      toast.success("Location added successfully!");
+      return data[0]?.place_id ?? null;
     },
     [token]
   );
@@ -72,22 +72,22 @@ export const useWedding = () => {
         },
         body: JSON.stringify(eventData),
       });
-  
-      const data = await response.json().catch(() => null);
-  
+
       if (!response.ok) {
-        const errorMessage = data?.message || "Error creating event. Please try again.";
+        const errorData = await response.json().catch(() => null);
+        const errorMessage =
+          errorData?.message || "Error creating event. Please try again.";
         console.log("Create Event Error Response:", errorMessage);
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-  
+
+      const data = await response.json();
       localStorage.setItem("_id", data._id);
       return data;
     },
     [token]
   );
-  
 
   const getEvent = useCallback(
     async (id: string): Promise<any> => {
@@ -190,7 +190,7 @@ export const useWedding = () => {
 
   const getEventRSVPs = useCallback(
     async (
-      eventId: string,
+      eventId: string | null,
       status?: string,
       page: number = 1,
       limit: number = 20

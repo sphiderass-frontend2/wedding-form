@@ -197,7 +197,7 @@ const SignupForm = () => {
             }}
           />
           <p className="font-normal text-sm">
-            I agree to Richlist's{" "}
+            I agree to Richlist&apos;s{" "}
             <span className="text-accent">Terms & Conditions</span> &{" "}
             <span className="text-accent">Privacy Policy.</span>
           </p>
