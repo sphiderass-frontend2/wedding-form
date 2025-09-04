@@ -67,7 +67,7 @@ export default function Step2({ formData, onChange, setFormData }: Props) {
 
 
   return (
-    <div className="bg-tab-primary p-5">
+    <div className="bg-tab-primary p-5 rounded-2xl">
       <h1 className="text-accent text-2xl font-semibold">Guest Info</h1>
       <p className="mt-3 text-gray">Manage your guest</p>
 

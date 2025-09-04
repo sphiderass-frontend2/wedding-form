@@ -45,7 +45,7 @@ const SignIn = () => {
                 <p className="text-gray font-medium text-sm">
                   Access exclusive events and experience
                 </p>
-
+{/* 
                 <div className="flex md:flex-row flex-col items-center gap-4 justify-center">
                   <button
                     className="flex items-center justify-center gap-2 rounded-3xl md:py-4 md:px-6 p-3 border border-gray text-sm font-normal w-full"
@@ -65,14 +65,14 @@ const SignIn = () => {
                     </span>
                     Sign in with Facebook
                   </button>
-                </div>
+                </div> */}
 
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <hr className="border border-[#E6E8EC] w-full" />
 
                   <p className="text-gray/50">OR</p>
                   <hr className="border border-[#E6E8EC] w-full" />
-                </div>
+                </div> */}
 
                 <SigninForm />
 

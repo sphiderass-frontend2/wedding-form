@@ -89,53 +89,69 @@ const EventDetail = () => {
 
 
    
-<section className='px-3 md:px-10'>
+<section className='px-2 md:px-10'>
 
 
       {openForm ? (
-<section className='px-5 md:px-0'>
+<section className='px-2 md:px-0'>
+<div className="space-y-3 p-4 rounded-xl mt-4 bg-tab-secondary">
+        {/* RSVP Toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            id="rsvp-toggle"
+            type="checkbox"
+            // checked={formData.hasRSVP}
+            // onChange={(e) => handleChange("hasRSVP", e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="rsvp-toggle" className="text-sm text-text-primary">
+            Has RSVP?
+          </label>
+        </div>
 
-          <div className="space-y-3 p-4 rounded-xl mt-4  bg-tab-secondary">
-                <InputField
-  label="Full Name"
-  required
-  placeholder="Enter Full Name"
-  value={formData.fullName}
-  onChange={(value: string) => handleChange("fullName", value)}
-/>
-       
-                 <InputField
-                   label="Title/Relation"
-                   placeholder="Enter Title/Relation"
-                   value={formData.guestTitle}
-                   onChange={(value: string) => handleChange("guestTitle", value)}
-                 />
-       
-                 <h2 className="text-accent text-xl font-semibold mt-4">
-                   Contact Details
-                 </h2>
-       
-                 <InputField
-                   label="Phone Number"
-                   placeholder="Enter Phone Number"
-                   value={formData.phoneNumber}
-                   onChange={(value: string) => handleChange("phoneNumber", value)}
-                 />
-       
-                 <InputField
-                   label="Email"
-                   placeholder="Enter Email"
-                  value={formData.emailAddress}
-                   onChange={(value: string) => handleChange("emailAddress", value)}
-                 />
-       
-                 {/* Save button */}
-                 <div className="flex justify-end mt-10">
-                   <Button variant="outline" onClick={handleSave}>
-                     Save & Preview
-                   </Button>
-                 </div>
-               </div>
+        <InputField
+          label="Full Name"
+          required
+          placeholder="Enter Full Name"
+          value={formData.fullName}
+          onChange={(value: string) => handleChange("fullName", value)}
+        />
+
+        <InputField
+          label="Title/Relation"
+          placeholder="Enter Title/Relation"
+          value={formData.guestTitle}
+          onChange={(value: string) => handleChange("guestTitle", value)}
+        />
+
+        <h2 className="text-accent text-xl font-semibold mt-4">
+          Contact Details
+        </h2>
+
+        <InputField
+          label="Phone Number"
+          placeholder="Enter Phone Number"
+          value={formData.phoneNumber}
+          onChange={(value: string) => handleChange("phoneNumber", value)}
+        />
+
+        <InputField
+          label="Email"
+          placeholder="Enter Email"
+          value={formData.emailAddress}
+          onChange={(value: string) => handleChange("emailAddress", value)}
+        />
+
+        {/* Save button */}
+        <div className="flex justify-end mt-10">
+          <Button
+            onClick={handleSave}
+            className="border px-4 py-2 rounded bg-white text-text-primary"
+          >
+            Save & Preview
+          </Button>
+        </div>
+      </div>
           </section>
 
       ) : (
@@ -208,10 +224,6 @@ const EventDetail = () => {
           <h1 className='text-xl font-semibold'>Address</h1>
           <p>{event?.address}</p>
         </div>
-     
-
-          
-    
       </section>
 
       <section className='flex justify-end mt-10 px-6'>

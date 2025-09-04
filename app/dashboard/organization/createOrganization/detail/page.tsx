@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SMsStar, Building } from '@/assets';
+import { SMsStar, Building } from '@/public/assets';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../../../components/ui/button';
 
 interface OrgDetails {
   imageUrl: string;
