@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Facebook, Google, Logo } from "@/public/assets";
+import {  Logo } from "@/public/assets";
 import SignupForm from "./components/SignupForm";
 import Threads from "./components/Threads";
 import { useAuth } from "./hooks/useAuth";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -51,7 +51,7 @@ const SignUp = () => {
               </p>
 
               {/* Social Buttons */}
-              <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+              {/* <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
                 <button
                   className="flex items-center justify-center gap-2 w-full rounded-3xl border bg-white border-gray p-3 md:py-4 md:px-6 text-sm font-normal"
                   disabled={pending}
@@ -66,14 +66,14 @@ const SignUp = () => {
                   <Image src={Facebook} alt="facebook-icon" width={20} />
                   Sign in with Facebook
                 </button>
-              </div>
+              </div> */}
 
               {/* Divider */}
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <hr className="w-full border border-[#E6E8EC]" />
                 <span className="text-gray/50">OR</span>
                 <hr className="w-full border border-[#E6E8EC]" />
-              </div>
+              </div> */}
 
               {/* Signup Form */}
               <SignupForm />

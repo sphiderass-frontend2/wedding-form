@@ -10,10 +10,6 @@ import { Ticket, Clock, Calendar, Edit } from '@/public/assets';
 import { Button } from '@/app/components/ui/button';
 
 
-interface Event {
-    type: string;
-    name: string;
-  }
   
   const getEventBgColor = (type: string): string => {
     switch (type.toLowerCase()) {

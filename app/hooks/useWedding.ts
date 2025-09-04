@@ -11,32 +11,32 @@ export const useWedding = () => {
   const uploadFile = useCallback(
     async (invitationCard: File): Promise<string> => {
       if (!token) throw new Error("No auth token provided");
-  
+
       const formData = new FormData();
       formData.append("invitationCard", invitationCard);
-  
+
       const response = await fetch(`${api}events/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }, // no Content-Type needed
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || "Failed to upload file");
       }
-  
+
       const data = await response.json();
-  
+
       // Backend returns `fileUrls` array
-      if (Array.isArray(data.fileUrls) && data.fileUrls[0]) return data.fileUrls[0];
+      if (Array.isArray(data.fileUrls) && data.fileUrls[0])
+        return data.fileUrls[0];
       if (typeof data === "string") return data;
-  
+
       throw new Error("Invalid upload response");
     },
     [token]
   );
-
 
   const uploadPlaces = useCallback(
     async (text: string): Promise<string | null> => {
@@ -48,21 +48,19 @@ export const useWedding = () => {
         },
         body: JSON.stringify({ text: text }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         toast.error("Error adding location. Please try again.");
         throw new Error(errorData?.message || "Failed to create place");
       }
-  
+
       const data = await response.json();
-      toast.success("Location added successfully!")
-      return data[0]?.place_id ?? null; 
+      toast.success("Location added successfully!");
+      return data[0]?.place_id ?? null;
     },
     [token]
   );
-  
-  
 
   const createEvent = useCallback(
     async (eventData: any): Promise<any> => {
@@ -74,22 +72,22 @@ export const useWedding = () => {
         },
         body: JSON.stringify(eventData),
       });
-  
-      const data = await response.json().catch(() => null);
-  
+
       if (!response.ok) {
-        const errorMessage = data?.message || "Error creating event. Please try again.";
+        const errorData = await response.json().catch(() => null);
+        const errorMessage =
+          errorData?.message || "Error creating event. Please try again.";
         console.log("Create Event Error Response:", errorMessage);
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-  
+
+      const data = await response.json();
       localStorage.setItem("_id", data._id);
       return data;
     },
     [token]
   );
-  
 
   const getEvent = useCallback(
     async (id: string): Promise<any> => {
@@ -110,8 +108,6 @@ export const useWedding = () => {
     },
     [token]
   );
-
-
 
   const inviteIndvidually = useCallback(
     async (eventId: string, guestData: any): Promise<any> => {
@@ -194,7 +190,7 @@ export const useWedding = () => {
 
   const getEventRSVPs = useCallback(
     async (
-      eventId: string,
+      eventId: string | null,
       status?: string,
       page: number = 1,
       limit: number = 20
@@ -241,20 +237,19 @@ export const useWedding = () => {
   );
 
   const updateRSVPStatus = useCallback(
-    async (rsvpId: string, status: "accepted" | "declined"): Promise<any> => {
+    async (rsvpId: string, decision: "approve" | "decline"): Promise<any> => {
       const apiUrl = api?.endsWith("/") ? api : `${api}/`;
 
-      console.log(`Updating RSVP ${rsvpId} status to:`, status);
+      console.log(`Updating RSVP ${rsvpId} decision to:`, decision);
 
       const response = await fetch(
-        `${apiUrl}organisation/rsvps/${rsvpId}/status`,
+        `${apiUrl}organisation/${rsvpId}/${decision}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ status }),
         }
       );
 
