@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useCallback, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -18,10 +18,10 @@ export const useAuth = () => {
     async (credentials: { email: string; password: string }): Promise<any> => {
       setPending(true);
       setError(null); // Clear previous errors
-      
+
       try {
         // Ensure proper URL construction with trailing slash
-        const apiUrl = api?.endsWith('/') ? api : `${api}/`;
+        const apiUrl = api?.endsWith("/") ? api : `${api}/`;
         const response = await fetch(`${apiUrl}auth/signin`, {
           method: "POST",
           headers: {
@@ -34,7 +34,10 @@ export const useAuth = () => {
 
         if (!response.ok) {
           // Extract error message from backend response
-          const errorMessage = data.message || data.error || `HTTP ${response.status}: ${response.statusText}`;
+          const errorMessage =
+            data.message ||
+            data.error ||
+            `HTTP ${response.status}: ${response.statusText}`;
           setError(errorMessage);
           throw new Error(errorMessage);
         }
@@ -65,29 +68,56 @@ export const useAuth = () => {
       email: string;
       password: string;
     }): Promise<any> => {
-      const response = await fetch(`${api}auth/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userInfo),
-      });
+      setPending(true);
+      setError(null); // Clear previous errors
 
-      const data = await response.json();
+      try {
+        // Ensure proper URL construction with trailing slash
+        const apiUrl = api?.endsWith("/") ? api : `${api}/`;
+        const response = await fetch(`${apiUrl}auth/signup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userInfo),
+        });
 
-      if (!response.ok) {
-        // Throw backend error message instead of generic
-        throw new Error(
-          data.message ? data.message.join(", ") : "Failed to register"
-        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          // Handle different error message formats from backend
+          let errorMessage = "Failed to register";
+
+          if (data.message) {
+            if (Array.isArray(data.message)) {
+              errorMessage = data.message.join(", ");
+            } else if (typeof data.message === "string") {
+              errorMessage = data.message;
+            }
+          } else if (data.error) {
+            errorMessage = data.error;
+          }
+
+          setError(errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        // Save token if backend returns one
+        if (data.token) {
+          setToken(data.token);
+        }
+
+        return data;
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+        throw err;
+      } finally {
+        setPending(false);
       }
-
-      // Save token if backend returns one
-      if (data.token) {
-        setToken(data.token);
-      }
-
-      return data;
     },
     [setToken]
   );

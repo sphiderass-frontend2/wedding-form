@@ -21,6 +21,7 @@ import EngagementGraph from "../../component/EngagementGraph";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { Button } from "@/app/components/ui/button";
 import { useWedding } from "@/app/hooks/useWedding";
+import Empty from "@/app/components/Empty";
 
 // This will be populated with real data from the API
 const getInfoCards = (statistics: any) => [
@@ -50,40 +51,40 @@ const getInfoCards = (statistics: any) => [
   },
 ];
 
-type Attendee = {
-  username: string;
-  prize: string;
-  date: string;
-  ticket: string;
-  status: string;
-  category?: string;
-  brand?: string;
-  email?: string;
-  amount?: string;
-  refund?: boolean;
-};
+// type Attendee = {
+//   username: string;
+//   prize: string;
+//   date: string;
+//   ticket: string;
+//   status: string;
+//   category?: string;
+//   brand?: string;
+//   email?: string;
+//   amount?: string;
+//   refund?: boolean;
+// };
 
-type Vendor = {
-  username: string;
-  prize?: string;
-  ticket?: string;
-  amount: string;
-  category: string;
-  brand: string;
-  email: string;
-  date: string;
-  status?: string;
-  refund?: boolean;
-};
+// type Vendor = {
+//   username: string;
+//   prize?: string;
+//   ticket?: string;
+//   amount: string;
+//   category: string;
+//   brand: string;
+//   email: string;
+//   date: string;
+//   status?: string;
+//   refund?: boolean;
+// };
 
-const sampleData = [
-  { date: "Oct 1", value: 20 },
-  { date: "Oct 3", value: 45 },
-  { date: "Oct 5", value: 80 },
-  { date: "Oct 7", value: 95 },
-  { date: "Oct 9", value: 70 },
-  { date: "Oct 11", value: 60 },
-];
+// const sampleData = [
+//   { date: "Oct 1", value: 20 },
+//   { date: "Oct 3", value: 45 },
+//   { date: "Oct 5", value: 80 },
+//   { date: "Oct 7", value: 95 },
+//   { date: "Oct 9", value: 70 },
+//   { date: "Oct 11", value: 60 },
+// ];
 
 function Analytics() {
   const router = useRouter();
@@ -117,7 +118,7 @@ function Analytics() {
 
   // Function to fetch RSVP data
   const fetchRSVPData = async (
-    eventId: string,
+    eventId: string | null,
     status?: string,
     page: number = 1
   ) => {
@@ -152,12 +153,13 @@ function Analytics() {
         setLoading(true);
         setError(null);
 
-        // Get event ID from localStorage or use test ID
-        const eventId =
-          localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+        // Get event ID from localStorage - no fallback test ID
+        const eventId = localStorage.getItem("_id");
 
         if (!eventId) {
-          throw new Error("No event ID found. Please create an event first.");
+          setError("No event ID found. Please create an event first.");
+          setLoading(false);
+          return;
         }
 
         console.log("Fetching dashboard data for event ID:", eventId);
@@ -219,12 +221,14 @@ function Analytics() {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
       // Fetch new page data
-      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+      const eventId = localStorage.getItem("_id");
+      if (!eventId) return;
+
       const status =
         activeTab === "attendees"
           ? undefined
           : activeTab === "vendors"
-          ? "accepted"
+          ? "approved"
           : "declined";
       fetchRSVPData(eventId, status, page);
     }
@@ -234,12 +238,14 @@ function Analytics() {
     setActiveTab(tab);
     setCurrentPage(1);
 
-    const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+    const eventId = localStorage.getItem("_id");
+    if (!eventId) return;
+
     const status =
       tab === "attendees"
         ? undefined
         : tab === "vendors"
-        ? "accepted"
+        ? "approved"
         : "declined";
 
     fetchRSVPData(eventId, status, 1);
@@ -247,18 +253,20 @@ function Analytics() {
 
   const handleRSVPStatusUpdate = async (
     rsvpId: string,
-    status: "accepted" | "declined"
+    decision: "approve" | "decline"
   ) => {
     try {
-      await updateRSVPStatus(rsvpId, status);
+      await updateRSVPStatus(rsvpId, decision);
 
       // Refresh the current tab data
-      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
+      const eventId = localStorage.getItem("_id");
+      if (!eventId) return;
+
       const currentStatus =
         activeTab === "attendees"
           ? undefined
           : activeTab === "vendors"
-          ? "accepted"
+          ? "approved"
           : "declined";
 
       await fetchRSVPData(eventId, currentStatus, currentPage);
@@ -306,7 +314,18 @@ function Analytics() {
     );
   }
 
-  // Show error state
+  // Show Empty component if no event ID found
+  if (error && error.includes("No event ID found")) {
+    return (
+      <Empty
+        message="You currently do not have any events created."
+        buttonText="Create Event"
+        onClick={() => router.push("/dashboard")}
+      />
+    );
+  }
+
+  // Show error state for other errors
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -528,51 +547,71 @@ function Analytics() {
                     </td>
                   </tr>
                 ) : (
-                  rsvpList.map((rsvp: any, idx: number) => (
-                    <tr
-                      key={rsvp.id}
-                      className="border-y border-gray rounded-lg relative"
-                    >
-                      <td className="py-3">
-                        <div>
-                          <div className="font-medium">{rsvp.fullName}</div>
-                          <div className="text-sm text-gray-500">
-                            {rsvp.guestTitle}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{rsvp.emailAddress}</td>
-
-                      {activeTab === "attendees" ? (
-                        <td>{rsvp.requestedAt}</td>
-                      ) : (
-                        <td>{rsvp.rsvpStatus}</td>
-                      )}
-
-                      <td>
-                        {activeTab === "attendees" &&
-                          rsvp.rsvpStatus === "pending" && (
-                            <div className="flex gap-2">
-                              <Button
-                                className="bg-[#009311] text-white text-sm"
-                                onClick={() =>
-                                  handleRSVPStatusUpdate(rsvp.id, "approved")
-                                }
-                              >
-                                Accept
-                              </Button>
-                              <Button
-                                className="text-red-500 font-semibold bg-transparent"
-                                onClick={() =>
-                                  handleRSVPStatusUpdate(rsvp.id, "declined")
-                                }
-                              >
-                                Decline
-                              </Button>
+                  rsvpList
+                    .filter(
+                      (rsvp: any) => rsvp.invitationType === "self_invited"
+                    )
+                    .map((rsvp: any, idx: number) => (
+                      <tr
+                        key={rsvp.id}
+                        className="border-y border-gray rounded-lg relative"
+                      >
+                        <td className="py-3">
+                          <div>
+                            <div className="font-medium">{rsvp.fullName}</div>
+                            <div className="text-sm text-gray-500">
+                              {rsvp.guestTitle}
                             </div>
-                          )}
-                        {activeTab === "attendees" &&
-                          rsvp.rsvpStatus !== "pending" && (
+                          </div>
+                        </td>
+                        <td>{rsvp.emailAddress}</td>
+
+                        {activeTab === "attendees" ? (
+                          <td>
+                            {rsvp.requestedAt
+                              ? new Date(rsvp.requestedAt).toLocaleString()
+                              : "N/A"}
+                          </td>
+                        ) : (
+                          <td>{rsvp.rsvpStatus}</td>
+                        )}
+
+                        <td>
+                          {activeTab === "attendees" &&
+                            rsvp.rsvpStatus === "pending" && (
+                              <div className="flex gap-2">
+                                <Button
+                                  className="bg-[#009311] text-white text-sm"
+                                  onClick={() =>
+                                    handleRSVPStatusUpdate(rsvp.id, "approve")
+                                  }
+                                >
+                                  Accept
+                                </Button>
+                                <Button
+                                  className="text-red-500 font-semibold bg-transparent"
+                                  onClick={() =>
+                                    handleRSVPStatusUpdate(rsvp.id, "decline")
+                                  }
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            )}
+                          {activeTab === "attendees" &&
+                            rsvp.rsvpStatus !== "pending" && (
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  rsvp.rsvpStatus === "accepted"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {rsvp.rsvpStatus}
+                              </span>
+                            )}
+                          {(activeTab === "vendors" ||
+                            activeTab === "refunds") && (
                             <span
                               className={`text-xs px-2 py-1 rounded-full ${
                                 rsvp.rsvpStatus === "accepted"
@@ -583,21 +622,9 @@ function Analytics() {
                               {rsvp.rsvpStatus}
                             </span>
                           )}
-                        {(activeTab === "vendors" ||
-                          activeTab === "refunds") && (
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              rsvp.rsvpStatus === "accepted"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {rsvp.rsvpStatus}
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                      </tr>
+                    ))
                 )}
               </tbody>
             </table>
