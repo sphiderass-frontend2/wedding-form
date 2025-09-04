@@ -135,7 +135,7 @@ const SigninForm = () => {
       <div className="flex items-center justify-center gap-2 text-lg font-medium">
         <p className="text-gray ">Already have an account?</p>
 
-        <Link href={"/signin"} className="text-accent">
+        <Link href={"/"} className="text-accent">
           Sign Up
         </Link>
       </div>
