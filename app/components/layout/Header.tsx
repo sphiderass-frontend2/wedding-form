@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,} from "react";
+import React, { useState, useEffect} from "react";
 // import { MenuIcon, ChevronDown } from "lucide-react";
 import { SMS, Notification, Location, Search, Hamburger, HamburgerLight } from "@/public/assets";
 import Avatar from '@/public/assets/images/Avatar.png'
@@ -12,6 +12,8 @@ import { Home, OrganizationIcon, Wallet, Support, EventIcon } from "@/public/ass
 import { usePathname } from "next/navigation";
 import ToggleMode from "../../components/ui/toggle-mode";
 import LayoutFooter from "@/public/assets/images/layoutFooter.png"
+import { useUserStore } from "@/app/store/useUserStore";
+import { useWedding } from "@/app/hooks/useWedding";
 
 
 
@@ -51,6 +53,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const { theme } = useTheme();
   const router = useRouter()
     const pathname = usePathname();
+      const { fullName, setFullName, clearUser } = useUserStore();
+      const { getUserLocation } = useWedding();
+    
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -60,6 +65,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    const coords: [number, number] = [3.4552179, 6.4302518];
+  
+    getUserLocation(coords)
+      .then((res: any) => console.log("API response:", res))
+      .catch((err: any) => console.error(err));
+  }, []);
+  
 
 
   return (
@@ -105,7 +118,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
             <div className="flex gap-2 text-text-primary " onClick={() => router.push("/dashboard/profile")}>
             <Image src={Avatar} alt="avatar" />
             <div className="space-y-1">
-                <p>sinmi_ogedengbe</p>
+                <p>{fullName}</p>
                 <p className="flex items-center text-gray text-base"> <Image src={Location} alt="locate" width={10} height={20}  /> Ikeja,Lagos</p>
             </div>
 

@@ -1,6 +1,7 @@
 "use client"
 import { useCallback, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+// import { useUserStore } from "../store/useUserStore";
 
 const api = process.env.NEXT_PUBLIC_API_URL;
 
@@ -9,6 +10,8 @@ export const useAuth = () => {
   const clearToken = useAuthStore((state) => state.clearToken);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  // const { fullName, setFullName, clearUser } = useUserStore();
+
 
   const dismissError = useCallback(() => {
     setError(null);

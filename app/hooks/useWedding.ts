@@ -7,6 +7,7 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 export const useWedding = () => {
   // Correctly select the token from the store
   const token = useAuthStore((state) => state.token);
+  
 
   const uploadFile = useCallback(
     async (invitationCard: File): Promise<string> => {
@@ -61,6 +62,29 @@ export const useWedding = () => {
     },
     [token]
   );
+
+
+  const getUserLocation = useCallback(
+    async (coords: [number, number]): Promise<any> => {
+      const response = await fetch(`${api}events/get-cordinates`, {
+        method: "POST", // must be POST to send JSON body
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: coords }), // send as { text: [lat, lng] }
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Failed to fetch location");
+      }
+  
+      const data = await response.json();
+      return data; // expected response
+    },
+    []
+  );
+  
   
   
 
@@ -305,5 +329,6 @@ export const useWedding = () => {
     getEventDashboard,
     getEventRSVPs,
     updateRSVPStatus,
+    getUserLocation
   };
 };

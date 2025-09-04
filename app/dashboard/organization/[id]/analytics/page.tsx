@@ -114,7 +114,8 @@ function Analytics() {
   const [scanned, setScanned] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const params = useParams();
-  const eventId = params.id;
+  const eventId = params.id as string;
+
 
   // New state for API data
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -230,7 +231,6 @@ function Analytics() {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
       // Fetch new page data
-      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
       const status =
         activeTab === "attendees"
           ? undefined
@@ -245,7 +245,6 @@ function Analytics() {
     setActiveTab(tab);
     setCurrentPage(1);
 
-    const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
     const status =
       tab === "attendees"
         ? undefined
@@ -264,7 +263,6 @@ function Analytics() {
       await updateRSVPStatus(rsvpId, status);
 
       // Refresh the current tab data
-      const eventId = localStorage.getItem("_id") || "68b6c62d259827d44d2907e3";
       const currentStatus =
         activeTab === "attendees"
           ? undefined
@@ -398,7 +396,7 @@ function Analytics() {
             </p>
             <p className="text-gray mt-5 sm:mt-7 text-base sm:text-xl">
               {dashboardData?.event?.description ||
-                "Event description not available"}
+                "Event description not available"} 
             </p>
           </div>
 

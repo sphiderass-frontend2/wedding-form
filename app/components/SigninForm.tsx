@@ -61,7 +61,7 @@ const SigninForm = () => {
     try {
       console.log("Attempting login with:", { email, password: "***" });
       await login({ email, password });
-      route.push("/dashboard");
+      // route.push("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
       // Error is now handled in useAuth hook
