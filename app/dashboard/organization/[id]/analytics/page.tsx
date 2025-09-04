@@ -21,6 +21,7 @@ import EngagementGraph from "../../component/EngagementGraph";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { Button } from "@/app/components/ui/button";
 import { useWedding } from "@/app/hooks/useWedding";
+import { useParams } from "next/navigation";
 
 // This will be populated with real data from the API
 const getInfoCards = (statistics: any) => [
@@ -104,6 +105,8 @@ function Analytics() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [scanned, setScanned] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
+  const params = useParams();
+  const id = params.id;
 
   // New state for API data
   const [dashboardData, setDashboardData] = useState<any>(null);
@@ -263,7 +266,6 @@ function Analytics() {
 
       await fetchRSVPData(eventId, currentStatus, currentPage);
 
-      // Also refresh dashboard data to update statistics
       const dashboardData = await getEventDashboard(eventId);
       setDashboardData(dashboardData);
     } catch (err: any) {
