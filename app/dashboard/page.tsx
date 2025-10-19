@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import VendorPic from "@/public/assets/images/sponsor.jpg";
@@ -11,8 +11,8 @@ import Step3 from "../components/form/StepThree";
 import Preview from "../components/form/Preview";
 import { useWeddingStore } from "../store/useWeddingStore";
 import { useWedding } from "../hooks/useWedding";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Guest {
   fullName: string;
@@ -26,9 +26,9 @@ interface FormData {
   description: string;
   category: string;
   numberOfAttendees: number;
-  date: string;               
-  startTime: string;           // "HH:mm"
-  endTime: string;             // "HH:mm"
+  date: string;
+  startTime: string; // "HH:mm"
+  endTime: string; // "HH:mm"
   venue: string;
   address: string;
   guestList: Guest[];
@@ -49,111 +49,116 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
   const [step, setStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const { formData, addGuest } = useWeddingStore();
-  const { createEvent: createEventApi, uploadFile, uploadPlaces } = useWedding();
-  const [eventLink, setEventLink] = useState('');
-  const [orgLink, setOrgLink] = useState('');
+  const {
+    createEvent: createEventApi,
+    uploadFile,
+    uploadPlaces,
+  } = useWedding();
+  const [eventLink, setEventLink] = useState("");
+  const [orgLink, setOrgLink] = useState("");
 
   const [loading, setLoading] = useState(false);
 
-  const [modal, setModal] = useState(false)
-    const handleInputChange = <K extends keyof FormData>(
-      field: K,
-      value: FormData[K],
-      guestIndex?: number
-    ) => {
-      if (guestIndex !== undefined) {
-        useWeddingStore
-          .getState()
-          .updateGuest(guestIndex, { [field as string]: value } as any);
-      } else {
-        // Update top-level field
-        useWeddingStore.getState().updateField(field, value);
-      }
-    };
-    
-    
-    
-    const nextStep = () => {
-      let isValid = false;
-    
-      if (step === 1 && formData.name?.trim()) isValid = true;
-      if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
-      if (step === 3 && formData.name?.trim()) isValid = true; 
-    
-      if (isValid) {
-        if (!completedSteps.includes(step)) {
-          setCompletedSteps((prev) => [...prev, step]);
-        }
-        if (step < 4) setStep(step + 1);
-      } else {
-        alert("Please complete this step before proceeding.");
-      }
-    };
-
-    function prevStep(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-      event.preventDefault();
-      if (step > 1) {
-        setStep(step - 1);
-      }
+  const [modal, setModal] = useState(false);
+  const handleInputChange = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K],
+    guestIndex?: number
+  ) => {
+    if (guestIndex !== undefined) {
+      useWeddingStore
+        .getState()
+        .updateGuest(guestIndex, { [field as string]: value } as any);
+    } else {
+      // Update top-level field
+      useWeddingStore.getState().updateField(field, value);
     }
+  };
 
-    const details = useWeddingStore((state) => state.formData);
+  const nextStep = () => {
+    let isValid = false;
 
-    
-    const createEvent = async () => {
-      setLoading(true);
-      try {
-        const updatedDetails = { ...details };
-    
-        if (updatedDetails.invitationCard instanceof File) {
-          const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
-          console.log("Uploaded URL:", uploadedUrl);
-    
-          updatedDetails.invitationCard = uploadedUrl;
-        }
-    
-        if (typeof updatedDetails.numberOfAttendees === "string") {
-          updatedDetails.numberOfAttendees = Number(updatedDetails.numberOfAttendees);
-        }
+    if (step === 1 && formData.name?.trim()) isValid = true;
+    if (step === 2 && formData.guestList?.[0]?.fullName?.trim()) isValid = true;
+    if (step === 3 && formData.name?.trim()) isValid = true;
 
-        if (updatedDetails.venue) {
-          const placeId = await uploadPlaces(updatedDetails.venue);
-          console.log("Uploaded Place ID:", placeId);
-        
-          if (placeId) {
-            updatedDetails.venue = placeId; 
-          }
-        }
-        if (Array.isArray(updatedDetails.guestList)) {
-          updatedDetails.guestList = updatedDetails.guestList.map(
-            (guest) => guest
-          );
-        }
-    
-        console.log("Updated Details Sent:", updatedDetails);
-    
-        const response = await createEventApi(updatedDetails);
-    
-        console.log("Event created successfully:", response._id);
-        setEventLink(`https://richlist-rouge.vercel.app/event/${response._id}/join`);
-        setOrgLink(`https://richlist-rouge.vercel.app/organization/${response._id}/`);
-        localStorage.setItem("_id", response._id);
-        setModal(true);
-
-      } catch (error) {
-        console.error("Error creating event:", error);
-        toast.error("error")
-
-      } finally {
-        setLoading(false);
+    if (isValid) {
+      if (!completedSteps.includes(step)) {
+        setCompletedSteps((prev) => [...prev, step]);
       }
-    };
+      if (step < 4) setStep(step + 1);
+    } else {
+      alert("Please complete this step before proceeding.");
+    }
+  };
 
-  
+  function prevStep(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    event.preventDefault();
+    if (step > 1) {
+      setStep(step - 1);
+    }
+  }
+
+  const details = useWeddingStore((state) => state.formData);
+
+  const createEvent = async () => {
+    setLoading(true);
+    try {
+      const updatedDetails = { ...details };
+
+      if (updatedDetails.invitationCard instanceof File) {
+        const uploadedUrl = await uploadFile(updatedDetails.invitationCard);
+        console.log("Uploaded URL:", uploadedUrl);
+
+        updatedDetails.invitationCard = uploadedUrl;
+      }
+
+      if (typeof updatedDetails.numberOfAttendees === "string") {
+        updatedDetails.numberOfAttendees = Number(
+          updatedDetails.numberOfAttendees
+        );
+      }
+
+      if (updatedDetails.venue) {
+        const placeId = await uploadPlaces(updatedDetails.venue);
+        console.log("Uploaded Place ID:", placeId);
+
+        if (placeId) {
+          updatedDetails.venue = placeId;
+        }
+      }
+      if (Array.isArray(updatedDetails.guestList)) {
+        updatedDetails.guestList = updatedDetails.guestList.map(
+          (guest) => guest
+        );
+      }
+
+      console.log("Updated Details Sent:", updatedDetails);
+
+      const response = await createEventApi(updatedDetails);
+
+      console.log("Event created successfully:", response._id);
+      setEventLink(
+        `https://richlist-rouge.vercel.app/event/${response._id}/join`
+      );
+      setOrgLink(
+        `https://richlist-rouge.vercel.app/organization/${response._id}/`
+      );
+      localStorage.setItem("_id", response._id);
+      setModal(true);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast.error("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-
-            <ToastContainer />
+      <ToastContainer />
 
       {loading && <LoadingModal />}
       {/* Top Section with Background */}
@@ -169,14 +174,19 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
 
         {/* Back Button */}
         <div className="absolute top-4 left-4 z-20">
-          <Button onClick={onBack} className="bg-white text-black shadow hidden md:block">
+          <Button
+            onClick={onBack}
+            className="bg-white text-black shadow hidden md:block"
+          >
             ← Back
           </Button>
         </div>
 
         <div className="absolute z-20 top-24 md:top-8 w-full  left-1/2 -translate-x-1/2 text-white text-center">
           <h1 className="font-semibold text-3xl">Create Event</h1>
-          <p className="md:text-lg">Dream it, Plan it, own it, Your event journey starts here </p>
+          <p className="md:text-lg">
+            Dream it, Plan it, own it, Your event journey starts here{" "}
+          </p>
         </div>
 
         {/* Step Indicators */}
@@ -212,53 +222,64 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
       </div>
 
       <section className="px-2 md:px-0">
+        <div className="  mt-5">
+          {step === 1 && (
+            <Step1
+              formData={formData}
+              onChange={(field, value) =>
+                handleInputChange(field as keyof FormData, value)
+              }
+            />
+          )}
+          {step === 2 && (
+            <Step2
+              formData={formData}
+              onChange={
+                handleInputChange as (
+                  field: string,
+                  value: string,
+                  guestIndex?: number
+                ) => void
+              }
+              setFormData={addGuest}
+            />
+          )}
+          {step === 3 && (
+            <Step3
+              formData={formData}
+              onChange={(field, value) =>
+                handleInputChange(field as keyof FormData, value)
+              }
+            />
+          )}
+          {step === 4 && <Preview formData={formData} />}
 
-      <div className="  mt-5">
-      {step === 1 && (
-        <Step1
-          formData={formData}
-          onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
-        />
-      )}
-{step === 2 && (
-  <Step2
-    formData={formData}
-    onChange={handleInputChange as (field: string, value: string, guestIndex?: number) => void}
-    setFormData={addGuest}
-  />
-)}
-{step === 3 && (
-  <Step3
-    formData={formData}
-    onChange={(field, value) => handleInputChange(field as keyof FormData, value)}
-  />
-)}
-{step === 4 && <Preview formData={formData} />}
+          <div
+            className={`flex ${
+              step > 1 ? "justify-between" : "justify-end"
+            }  mt-10`}
+          >
+            {step > 1 && (
+              <Button
+                onClick={prevStep}
+                className="bg-gray-300 text-black hover:bg-gray-400"
+              >
+                Back
+              </Button>
+            )}
 
-
-      <div className={`flex ${step > 1 ? "justify-between" : "justify-end"}  mt-10`}>
-      {step > 1 && (
-    <Button
-      onClick={prevStep}
-      className="bg-gray-300 text-black hover:bg-gray-400"
-    >
-      Back
-    </Button>
-  )}
-
-  {/* Next / Save & Preview / Save */}
-  {step < 4 ? (
-    <Button onClick={nextStep} className="bg-accent text-white">
-      {step < 3 ? "Next" : "Save & Preview"}
-    </Button>
-) : (
-  <Button onClick={createEvent} className="bg-accent text-white">
-    Save
-  </Button>
-)}
-
-      </div>
-      </div>
+            {/* Next / Save & Preview / Save */}
+            {step < 4 ? (
+              <Button onClick={nextStep} className="bg-accent text-white">
+                {step < 3 ? "Next" : "Save & Preview"}
+              </Button>
+            ) : (
+              <Button onClick={createEvent} className="bg-accent text-white">
+                Save
+              </Button>
+            )}
+          </div>
+        </div>
       </section>
       {modal && (
         <ResponseModal
@@ -269,7 +290,6 @@ const SponsorForm = ({ onBack }: { onBack: () => void }) => {
           onClose={() => (window.location.href = `${orgLink}`)}
         />
       )}
-     
     </>
   );
 };
